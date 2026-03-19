@@ -19,23 +19,25 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             ZStack(alignment: .topLeading) {
-                List {
-                    ForEach(products, id: \.id) { product in
-                        NavigationLink(value: product) {
-                            ProductView(product: product)
-                                .frame(maxWidth: .infinity)
-                                .aspectRatio(16/9, contentMode: .fill)
-                                .matchedTransitionSource(id: product.id, in: nameSpace)
+                GeometryReader { geometry in
+                    List {
+                        ForEach(products, id: \.id) { product in
+                            NavigationLink(value: product) {
+                                ProductView(product: product)
+                                    .frame(maxWidth: geometry.size.width)
+                                    .aspectRatio(16/9, contentMode: .fit)
+                                    .matchedTransitionSource(id: product.id, in: nameSpace)
+                            }
                         }
+                        .listRowSeparator(.hidden)
+                        .safeAreaPadding(.horizontal, 8)
                     }
-                    .listRowSeparator(.hidden)
-                    .safeAreaPadding(.horizontal, 8)
-                }
-                .listStyle(.plain)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .safeAreaPadding(.top, 40)
-                .refreshable {
-                    debugPrint("Refresh")
+                    .listStyle(.plain)
+                    .frame(maxWidth: geometry.size.width)
+                    .safeAreaPadding(.top, 40)
+                    .refreshable {
+                        debugPrint("Refresh")
+                    }
                 }
                 
                 CategoryView(
