@@ -15,11 +15,7 @@ struct DashboardView: View {
     @State private var selectedTab: TabbarItem = .home
     
     private var homeView: some View = {
-        HomeView(
-            categories: CategoryItem.mocks,
-            products: Product.mocks
-        )
-        
+        HomeView(viewModel: .init(categories: CategoryItem.mocks, products: Product.mocks))
     }()
     
     private var cartView: some View = {
@@ -28,22 +24,17 @@ struct DashboardView: View {
     }()
     
     private var personView: some View = {
-        HomeView(
-            categories: CategoryItem.mocks,
-            products: Product.mocks
-        )
+        HomeView(viewModel: .init(categories: CategoryItem.mocks, products: Product.mocks))
     }()
     
     private var settingView: some View = {
-        HomeView(
-            categories: CategoryItem.mocks,
-            products: Product.mocks
-        )
+        HomeView(viewModel: .init(categories: CategoryItem.mocks, products: Product.mocks))
     }()
     
     var body: some View {
         TabView(selection: $selectedTab) {
             homeView
+                .tag(TabbarItem.home)
                 .tabItem {
                     TabbarItemView(
                         item: .home,
@@ -60,6 +51,7 @@ struct DashboardView: View {
                 }
             
             personView
+                .tag(TabbarItem.user)
                 .tabItem {
                     TabbarItemView(
                         item: .user,
@@ -68,6 +60,7 @@ struct DashboardView: View {
                 }
             
             settingView
+                .tag(TabbarItem.setting)
                 .tabItem {
                     TabbarItemView(
                         item: .setting,

@@ -6,11 +6,18 @@
 //
 
 import SwiftUI
+import SDWebImageSwiftUI
 
 struct ProductView: View {
     let product: Product
     var body: some View {
-        AsyncImage(url: URL(string: product.thumb))
+        WebImage(url: URL(string: product.thumb)) { image in
+            image.resizable()
+                .scaledToFill()
+        } placeholder: {
+            Rectangle().foregroundColor(.gray)
+        }
+        .indicator(.progress)
         .overlay(alignment: .topLeading) {
             Text(product.name)
                 .foregroundStyle(Color.white)
@@ -18,11 +25,8 @@ struct ProductView: View {
                 .lineLimit(1)
                 .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                 .padding(.all, 8)
-                .background {
-                    Color.black.opacity(0.2)
-                }
+                .background(Color.white.opacity(0.3))
         }
-        .clipShape(.rect(cornerRadius: 8))
     }
 }
 
