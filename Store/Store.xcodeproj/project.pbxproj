@@ -7,7 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4116B7822F70B0B500CFB90A /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 4116B7812F70B0B500CFB90A /* Alamofire */; };
 		41387BE82F6D7DAC000369B8 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 41387BE72F6D7DAC000369B8 /* SDWebImageSwiftUI */; };
+		419E14042F74A1A000C00F68 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = 419E14032F74A1A000C00F68 /* AlertToast */; };
+		41A1454C2F6D98DB00835BA2 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 41A1454B2F6D98DB00835BA2 /* FirebaseCore */; };
+		41A1454E2F6D98DB00835BA2 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 41A1454D2F6D98DB00835BA2 /* FirebaseStorage */; };
+		41D58B7A2F7557EC000E705A /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 41D58B792F7557EC000E705A /* IQKeyboardManagerSwift */; };
+		41E83DAE2F7AD8A400121AF6 /* ProjectRules.md in Resources */ = {isa = PBXBuildFile; fileRef = 41E83DAD2F7AD8A400121AF6 /* ProjectRules.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,15 +33,42 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		41A145892F6D9A5C00835BA2 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		419EAD912DAFE82A00C136D3 /* Store.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Store.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		419EAD9E2DAFE82B00C136D3 /* StoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		419EADA82DAFE82B00C136D3 /* StoreUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StoreUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		41E83DAD2F7AD8A400121AF6 /* ProjectRules.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ProjectRules.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		4156BAAF2F7553FF00A7B49D /* Exceptions for "Store" folder in "Store" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 419EAD902DAFE82A00C136D3 /* Store */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		419EAD932DAFE82A00C136D3 /* Store */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				4156BAAF2F7553FF00A7B49D /* Exceptions for "Store" folder in "Store" target */,
+			);
 			path = Store;
 			sourceTree = "<group>";
 		};
@@ -56,7 +89,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				41A1454C2F6D98DB00835BA2 /* FirebaseCore in Frameworks */,
+				4116B7822F70B0B500CFB90A /* Alamofire in Frameworks */,
+				41A1454E2F6D98DB00835BA2 /* FirebaseStorage in Frameworks */,
+				419E14042F74A1A000C00F68 /* AlertToast in Frameworks */,
 				41387BE82F6D7DAC000369B8 /* SDWebImageSwiftUI in Frameworks */,
+				41D58B7A2F7557EC000E705A /* IQKeyboardManagerSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,6 +122,7 @@
 				419EADA12DAFE82B00C136D3 /* StoreTests */,
 				419EADAB2DAFE82B00C136D3 /* StoreUITests */,
 				419EAD922DAFE82A00C136D3 /* Products */,
+				41E83DAD2F7AD8A400121AF6 /* ProjectRules.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -107,6 +146,7 @@
 				419EAD8D2DAFE82A00C136D3 /* Sources */,
 				419EAD8E2DAFE82A00C136D3 /* Frameworks */,
 				419EAD8F2DAFE82A00C136D3 /* Resources */,
+				41A145892F6D9A5C00835BA2 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -118,6 +158,11 @@
 			name = Store;
 			packageProductDependencies = (
 				41387BE72F6D7DAC000369B8 /* SDWebImageSwiftUI */,
+				41A1454B2F6D98DB00835BA2 /* FirebaseCore */,
+				41A1454D2F6D98DB00835BA2 /* FirebaseStorage */,
+				4116B7812F70B0B500CFB90A /* Alamofire */,
+				419E14032F74A1A000C00F68 /* AlertToast */,
+				41D58B792F7557EC000E705A /* IQKeyboardManagerSwift */,
 			);
 			productName = Store;
 			productReference = 419EAD912DAFE82A00C136D3 /* Store.app */;
@@ -177,7 +222,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1630;
-				LastUpgradeCheck = 1630;
+				LastUpgradeCheck = 2630;
 				TargetAttributes = {
 					419EAD902DAFE82A00C136D3 = {
 						CreatedOnToolsVersion = 16.3;
@@ -203,6 +248,10 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				41387BE62F6D7DAC000369B8 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
+				41A1454A2F6D98DB00835BA2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				4116B7802F70B0B500CFB90A /* XCRemoteSwiftPackageReference "Alamofire" */,
+				419E14022F74A1A000C00F68 /* XCRemoteSwiftPackageReference "AlertToast" */,
+				41D58B782F7557EC000E705A /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 419EAD922DAFE82A00C136D3 /* Products */;
@@ -221,6 +270,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				41E83DAE2F7AD8A400121AF6 /* ProjectRules.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -337,6 +387,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -394,6 +445,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -404,19 +456,22 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 28C4Z9L4S6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Store/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Hãy cấp quyền sử dụng Bluetooth để ứng dụng tìm kiếm và kết nối với các thiết bị khác";
+				INFOPLIST_KEY_NSBluetoothWhileInUseUsageDescription = "Hãy cấp quyền sử dụng Bluetooth để ứng dụng tìm kiếm và kết nối với các thiết bị Smart iOT trong gia đình bạn";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleLightContent;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -424,9 +479,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.manhnv96it.Store;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -435,19 +494,22 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 28C4Z9L4S6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Store/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Hãy cấp quyền sử dụng Bluetooth để ứng dụng tìm kiếm và kết nối với các thiết bị khác";
+				INFOPLIST_KEY_NSBluetoothWhileInUseUsageDescription = "Hãy cấp quyền sử dụng Bluetooth để ứng dụng tìm kiếm và kết nối với các thiết bị Smart iOT trong gia đình bạn";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleLightContent;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -455,9 +517,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.manhnv96it.Store;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -469,7 +535,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 28C4Z9L4S6;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.manhnv96it.StoreTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -488,7 +554,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 28C4Z9L4S6;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.manhnv96it.StoreTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -575,21 +641,78 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		4116B7802F70B0B500CFB90A /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.11.1;
+			};
+		};
 		41387BE62F6D7DAC000369B8 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI.git";
 			requirement = {
-				kind = exactVersion;
-				version = 3.1.4;
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.4;
+			};
+		};
+		419E14022F74A1A000C00F68 /* XCRemoteSwiftPackageReference "AlertToast" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/elai950/AlertToast.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.9;
+			};
+		};
+		41A1454A2F6D98DB00835BA2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.11.0;
+			};
+		};
+		41D58B782F7557EC000E705A /* XCRemoteSwiftPackageReference "IQKeyboardManager" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/hackiftekhar/IQKeyboardManager.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.2;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		4116B7812F70B0B500CFB90A /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4116B7802F70B0B500CFB90A /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
 		41387BE72F6D7DAC000369B8 /* SDWebImageSwiftUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 41387BE62F6D7DAC000369B8 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
 			productName = SDWebImageSwiftUI;
+		};
+		419E14032F74A1A000C00F68 /* AlertToast */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 419E14022F74A1A000C00F68 /* XCRemoteSwiftPackageReference "AlertToast" */;
+			productName = AlertToast;
+		};
+		41A1454B2F6D98DB00835BA2 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 41A1454A2F6D98DB00835BA2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		41A1454D2F6D98DB00835BA2 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 41A1454A2F6D98DB00835BA2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+		41D58B792F7557EC000E705A /* IQKeyboardManagerSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 41D58B782F7557EC000E705A /* XCRemoteSwiftPackageReference "IQKeyboardManager" */;
+			productName = IQKeyboardManagerSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

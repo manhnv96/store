@@ -6,20 +6,33 @@
 //
 
 import SwiftUI
+import Alamofire
 import SDWebImageSwiftUI
 
 struct ProductDetailView: View {
     @Environment(\.dismiss) var dismiss
+    @Namespace var nameSpace
     
     var product: Product
     
     var body: some View {
-        LazyVStack(alignment: .leading) {
-            WebImage(url: )
-            Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-                .onTapGesture {
-                    dismiss()
-                }
+        VStack(alignment: .center) {
+            Text(product.name)
+                .font(.title)
+                .foregroundStyle(Color.black)
+                .lineLimit(1)
+                .padding(.all, 8)
+                .matchedTransitionSource(id: product.name, in: nameSpace)
+            
+            WebImage(url: try? product.thumb.asURL()) { image in
+                image.resizable()
+                    .scaledToFit()
+                    .matchedTransitionSource(id: product.id, in: nameSpace)
+            } placeholder: {
+                Rectangle().foregroundColor(.gray)
+            }
+            .indicator(.progress)
+            Spacer()
         }
     }
 }

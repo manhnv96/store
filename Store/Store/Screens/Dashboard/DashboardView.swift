@@ -9,7 +9,7 @@ import SwiftUI
 
 struct DashboardView: View {
     private let tabbarItems: [TabbarItem] = [
-        .home, .cart, .user, .setting
+        .home, .cart, .user
     ]
     
     @State private var selectedTab: TabbarItem = .home
@@ -33,42 +33,32 @@ struct DashboardView: View {
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            homeView
-                .tag(TabbarItem.home)
-                .tabItem {
-                    TabbarItemView(
-                        item: .home,
-                        selectedItem: $selectedTab
-                    )
-                }
+            Tab(value: TabbarItem.home) {
+                homeView
+            } label: {
+                label(for: .home, selected: selectedTab == .home)
+            }
             
-            cartView
-                .tabItem {
-                    TabbarItemView(
-                        item: .cart,
-                        selectedItem: $selectedTab
-                    )
-                }
+            Tab(value: TabbarItem.cart) {
+                cartView
+            } label: {
+                label(for: .cart, selected: selectedTab == .cart)
+            }
             
-            personView
-                .tag(TabbarItem.user)
-                .tabItem {
-                    TabbarItemView(
-                        item: .user,
-                        selectedItem: $selectedTab
-                    )
-                }
-            
-            settingView
-                .tag(TabbarItem.setting)
-                .tabItem {
-                    TabbarItemView(
-                        item: .setting,
-                        selectedItem: $selectedTab
-                    )
-                }
+            Tab(value: TabbarItem.user) {
+                personView
+            } label: {
+                label(for: .user, selected: selectedTab == .user)
+            }
         }
-        .tint(Color.primary)
+        .tint(Color.blue)
+    }
+    
+    func label(for item: TabbarItem, selected: Bool) -> some View {
+        Label(
+            item.title,
+            systemImage: selected ? item.selectedImage : item.image
+        )
     }
 }
 

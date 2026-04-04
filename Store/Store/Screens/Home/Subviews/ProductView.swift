@@ -9,11 +9,15 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 struct ProductView: View {
+    @Namespace var nameSpace
+    
     let product: Product
+    
     var body: some View {
         WebImage(url: URL(string: product.thumb)) { image in
             image.resizable()
                 .scaledToFill()
+                .matchedTransitionSource(id: product.id, in: nameSpace)
         } placeholder: {
             Rectangle().foregroundColor(.gray)
         }
@@ -26,6 +30,7 @@ struct ProductView: View {
                 .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                 .padding(.all, 8)
                 .background(Color.white.opacity(0.3))
+                .matchedTransitionSource(id: product.name, in: nameSpace)
         }
     }
 }

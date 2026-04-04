@@ -15,19 +15,22 @@ final class CodableProperty<Value> {
     let codingPaths: [String]?
     let dateFormat: String?
     var wrappedValue: Value?
+    var defaultValue: Value?
         
     init(
         customKey: String? = nil,
         alternativeKey: [String]? = nil,
         childPaths: [String]? = nil,
         dateFormat: String? = nil,
-        wrappedValue: Value? = nil
+        wrappedValue: Value? = nil,
+        defaultValue: Value? = nil
     ) {
         self.customKey = customKey
         self.alternativeKey = alternativeKey
         self.codingPaths = childPaths
         self.dateFormat = dateFormat
         self.wrappedValue = wrappedValue
+        self.defaultValue = defaultValue
     }
 }
 
@@ -98,28 +101,28 @@ extension CodableProperty: DecodableKey where Value: Decodable {
     ) -> Value? {
         do {
             if Value.self == Date.self {
-                return try decodeDate(from: container, codingKey: codingKey) as? Value
+                return try decodeDate(from: container, codingKey: codingKey)
             } else {
                 return try decodeValue(from: container, codingKey: codingKey)
             }
         } catch {
             debugPrint("Decode \(String(describing: Value.self)): \(error.localizedDescription)")
-            return nil
+            return defaultValue
         }
     }
     
     private func decodeDate(
         from container: KeyedDecodingContainer<CodableKey>,
         codingKey: CodableKey
-    ) throws -> Date? {
+    ) throws -> Value? {
         guard let string = try container.decodeIfPresent(
             String.self,
             forKey: codingKey
         ) else {
-            return nil
+            return defaultValue
         }
 
-        return dateFormatter?.date(from: string)
+        return dateFormatter?.date(from: string) as? Value
     }
     
     private func decodeValue(

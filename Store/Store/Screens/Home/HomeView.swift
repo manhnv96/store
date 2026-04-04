@@ -9,10 +9,10 @@ import SwiftUI
 import SDWebImage
 
 struct HomeView: View {
+    @Namespace var nameSpace
+    
     @State var viewModel: HomeViewModel
     @State private var path = NavigationPath()
-    
-    @Namespace var nameSpace
     
     // Grid configuration
     private let itemsPerRow: CGFloat = 2
@@ -36,6 +36,9 @@ struct HomeView: View {
                         .zoom(sourceID: product.id, in: nameSpace)
                     )
             }
+            .navigationDestination(for: Bool.self) { bool in
+                ImportNewView()
+            }
         }
     }
     
@@ -49,49 +52,17 @@ struct HomeView: View {
     
     private var contentView: some View {
         ScrollView {
-            LazyVStack(spacing: itemSpacing) {
+            VStack(spacing: itemSpacing) {
                 ForEach(viewModel.categories, id: \.id) { category in
-                    Section {
-                        let columns: [GridItem] = Array(
-                            repeating: GridItem(.flexible(), spacing: itemSpacing),
-                            count: Int(itemsPerRow)
-                        )
-                        LazyVGrid(
-                            columns: columns,
-                            spacing: itemSpacing
-                        ) {
-                            ForEach(viewModel.products, id: \.id) { product in
-                                NavigationLink(value: product) {
-                                    ProductView(product: product)
-                                        .cornerRadius(cornerRadius, antialiased: false)
-                                        .matchedTransitionSource(id: product.id, in: nameSpace)
-                                }
-                            }
-                        }
-                        .padding(16)
-                        .background {
-                            Color.brown.opacity(0.1).cornerRadius(3)
-                        }
-                    } header: {
-                        HStack {
-                            Text(category.title)
-                                .font(.title)
-                                .foregroundColor(.primary)
-                            Spacer()
-                            Button(action: {}) {
-                                Image(systemName: "plus")
-                                    .font(.title)
-                            }
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 5)
-                    }
+                    createSectionView(
+                        category: category,
+                        products: viewModel.products
+                    )
                 }
             }
         }
-        .refreshable {
-            
-        }
+        .scrollBounceBehavior(.basedOnSize)
+        .refreshable {}
     }
     
     private func createSectionView(
@@ -100,18 +71,17 @@ struct HomeView: View {
     ) -> some View {
         Section {
             let columns: [GridItem] = Array(
-                repeating: GridItem(
-                    .flexible(),
-                    spacing: itemSpacing
-                ),
+                repeating: GridItem(.flexible(), spacing: itemSpacing),
                 count: Int(itemsPerRow)
             )
-            LazyVGrid(columns: columns, spacing: itemSpacing) {
-                ForEach(products, id: \.id) { product in
+            LazyVGrid(
+                columns: columns,
+                spacing: itemSpacing
+            ) {
+                ForEach(viewModel.products, id: \.id) { product in
                     NavigationLink(value: product) {
                         ProductView(product: product)
-                            .cornerRadius(cornerRadius, antialiased: false)
-                            .matchedTransitionSource(id: product.id, in: nameSpace)
+                        .cornerRadius(cornerRadius, antialiased: false)
                     }
                 }
             }
@@ -125,11 +95,13 @@ struct HomeView: View {
                     .font(.title)
                     .foregroundColor(.primary)
                 Spacer()
-                Button(action: {}) {
-                    Image(systemName: "plus")
-                        .font(.title)
+                
+                NavigationLink(value: true) {
+                    Image(systemName: "plus").font(.title)
                 }
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 5)
         }
     }
 }

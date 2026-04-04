@@ -5,11 +5,11 @@
 //  Created by Mạnh Nguyễn Văn on 11/5/25.
 //
 
-enum TabbarItemType: String {
-    case home, cart, user, setting
+enum TabbarItemType: String, CaseIterable {
+    case home, cart, user
 }
 
-struct TabbarItem: Identifiable, Hashable {
+struct TabbarItem: Identifiable, Equatable, Hashable {
     var id: String { type.rawValue }
     
     let type: TabbarItemType
@@ -17,7 +17,11 @@ struct TabbarItem: Identifiable, Hashable {
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
-        _ = hasher.finalize()
+        hasher.finalize()
+    }
+    
+    static func == (lhs: TabbarItem, rhs: TabbarItem) -> Bool {
+        lhs.id == rhs.id
     }
 }
 
@@ -46,15 +50,6 @@ extension TabbarItem {
             title: "Person",
             image: "person.circle",
             selectedImage: "person.circle.fill"
-        )
-    }()
-    
-    static let setting: TabbarItem = {
-        TabbarItem(
-            type: .setting,
-            title: "Setting",
-            image: "gear",
-            selectedImage: "cart.fill"
         )
     }()
 }

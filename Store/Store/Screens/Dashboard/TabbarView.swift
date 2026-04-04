@@ -64,7 +64,7 @@ struct TabbarItemView: View {
     TabbarView(
         selectedTab: $selectedTab,
         items: [
-            .home, .cart, .user, .setting
+            .home, .cart, .user
         ]
     )
     .frame(width: 415)
