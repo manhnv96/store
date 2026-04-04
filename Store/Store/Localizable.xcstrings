@@ -1,0 +1,259 @@
+{
+  "sourceLanguage" : "vi",
+  "strings" : {
+    "action.connect" : {
+      "comment" : "Connect button title",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kết nối"
+          }
+        }
+      }
+    },
+    "bleConnected.actionDisconnect" : {
+      "comment" : "BLEConnectedView – disconnect button",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ngắt kết nối"
+          }
+        }
+      }
+    },
+    "bleConnected.deviceUnnamed" : {
+      "comment" : "BLEConnectedView – fallback name for unnamed peripheral",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thiết bị không tên"
+          }
+        }
+      }
+    },
+    "bleConnected.emptyDescription" : {
+      "comment" : "BLEConnectedView – empty state description",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hãy kết nối một thiết bị BLE trước"
+          }
+        }
+      }
+    },
+    "bleConnected.emptyTitle" : {
+      "comment" : "BLEConnectedView – empty state title",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chưa có thiết bị nào"
+          }
+        }
+      }
+    },
+    "bleConnected.headerTitle" : {
+      "comment" : "BLEConnectedView – header title",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thiết bị đã kết nối"
+          }
+        }
+      }
+    },
+    "bleConnected.statusConnected" : {
+      "comment" : "BLEConnectedView – connected status label",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đã kết nối"
+          }
+        }
+      }
+    },
+    "bluetooth.checking" : {
+      "comment" : "BluetoothDiscoveryView – checking Bluetooth state header",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kiểm tra Bluetooth"
+          }
+        }
+      }
+    },
+    "bluetooth.selectDevice" : {
+      "comment" : "BluetoothDiscoveryView – prompt to pick a device",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chọn thiết bị"
+          }
+        }
+      }
+    },
+    "bluetooth.turnOnPrompt" : {
+      "comment" : "BluetoothDiscoveryView – Bluetooth is off warning",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hãy bật Bluetooth để bắt đầu"
+          }
+        }
+      }
+    },
+    "bluetooth.unavailableDescription" : {
+      "comment" : "BluetoothDiscoveryView – unavailable state description",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hãy kiểm tra lại cài đặt bluetooth của bạn và thử lại"
+          }
+        }
+      }
+    },
+    "bluetooth.unavailableTitle" : {
+      "comment" : "BluetoothDiscoveryView – unavailable state title",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chưa bật Bluetooth"
+          }
+        }
+      }
+    },
+    "connectionType.bluetooth" : {
+      "comment" : "ConnectionType – Bluetooth option title",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bluetooth"
+          }
+        }
+      }
+    },
+    "connectionType.wifi" : {
+      "comment" : "ConnectionType – Wifi option title",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wifi"
+          }
+        }
+      }
+    },
+    "device.namePlaceholder" : {
+      "comment" : "Device name text field placeholder",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nhập tên gợi nhớ"
+          }
+        }
+      }
+    },
+    "device.nameTitle" : {
+      "comment" : "Device name text field label",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tên thiết bị"
+          }
+        }
+      }
+    },
+    "import.connectionLabel" : {
+      "comment" : "ImportNewView – connection type picker label",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kết nối qua"
+          }
+        }
+      }
+    },
+    "import.title" : {
+      "comment" : "ImportNewView – navigation title",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tạo mới!"
+          }
+        }
+      }
+    },
+    "import.typeEquipment" : {
+      "comment" : "ImportType – equipment segment title",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thiết bị"
+          }
+        }
+      }
+    },
+    "import.typeFolder" : {
+      "comment" : "ImportType – folder segment title",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thư mục"
+          }
+        }
+      }
+    },
+    "tabbar.cart" : {
+      "comment" : "TabbarItem – cart tab title",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Giỏ hàng"
+          }
+        }
+      }
+    },
+    "tabbar.home" : {
+      "comment" : "TabbarItem – home tab title / HomeView page title",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trang chủ"
+          }
+        }
+      }
+    },
+    "tabbar.user" : {
+      "comment" : "TabbarItem – user tab title",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cá nhân"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

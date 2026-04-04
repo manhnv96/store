@@ -34,7 +34,7 @@ struct BLEConnectedView: View {
             Image(systemName: "bluetooth")
                 .foregroundStyle(Color(.systemBlue))
                 .font(.title3.weight(.semibold))
-            Text("Thiết bị đã kết nối")
+            Text(Language.BleConnected.headerTitle)
                 .font(.title3.weight(.semibold))
                 .foregroundStyle(Color.primary)
             Spacer()
@@ -60,11 +60,11 @@ struct BLEConnectedView: View {
     }
 
     private var emptyStateView: some View {
-        ContentUnavailableView(
-            "Chưa có thiết bị nào",
-            systemImage: "bluetooth.slash",
-            description: Text("Hãy kết nối một thiết bị BLE trước")
-        )
+        ContentUnavailableView {
+            Label(Language.BleConnected.emptyTitle, systemImage: "bluetooth.slash")
+        } description: {
+            Text(Language.BleConnected.emptyDescription)
+        }
     }
 
     private var connectedListView: some View {
@@ -95,7 +95,7 @@ struct BLEConnectedView: View {
 
             // Device info
             VStack(alignment: .leading, spacing: 4) {
-                Text(peripheral.name ?? "Thiết bị không tên")
+                Text(peripheral.name ?? Language.BleConnected.deviceUnnamed)
                     .font(.body.weight(.medium))
                     .foregroundStyle(Color.primary)
                 Text(peripheral.identifier.uuidString)
@@ -113,7 +113,7 @@ struct BLEConnectedView: View {
                     Circle()
                         .fill(Color.green)
                         .frame(width: 8, height: 8)
-                    Text("Đã kết nối")
+                    Text(Language.BleConnected.statusConnected)
                         .font(.caption.weight(.medium))
                         .foregroundStyle(Color.green)
                 }
@@ -121,7 +121,7 @@ struct BLEConnectedView: View {
                 Button {
                     bluetooth.cancelConnection(peripheral)
                 } label: {
-                    Text("Ngắt kết nối")
+                    Text(Language.BleConnected.actionDisconnect)
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(Color(.systemRed))
                         .padding(.horizontal, 10)

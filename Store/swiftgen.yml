@@ -1,0 +1,25 @@
+# SwiftGen configuration
+# Install: brew install swiftgen
+# Usage:   swiftgen run  (from the project root, same folder as this file)
+
+strings:
+  inputs:
+    - Store/Store/Localizable.xcstrings
+  outputs:
+    - templateName: structured-swift5
+      output: Store/Store/Generated/L10n.swift
+      params:
+        enumName: L10n
+        publicAccess: false
+
+xcassets:
+  inputs:
+    - Store/Store/Assets.xcassets
+  outputs:
+    - templateName: swift5
+      output: Store/Store/Generated/Assets.swift
+      params:
+        enumName: Asset
+        publicAccess: false
+        imageAliasName: ImageAsset
+        colorAliasName: ColorAsset

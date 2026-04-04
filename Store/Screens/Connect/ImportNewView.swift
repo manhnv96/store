@@ -9,11 +9,11 @@ import SwiftUI
 import CoreBluetooth
 
 struct ImportNewView: View {
-    @State var title: String = "Tạo mới!"
+    @State var title: String = Language.Import.title
     var types: [ImportType] = ImportType.allCases
     @State var selectedImportType: ImportType? = ImportType.allCases.first
-    
-    let titleSelectConnection: String = "Kết nối qua"
+
+    let titleSelectConnection = Language.Import.connectionLabel
     
     let connectionTypes = ConnectionType.allCases
     @State var selectedConnection: ConnectionType?
@@ -86,8 +86,8 @@ enum ImportType: String, CaseIterable, SegmentedPickerItem {
     
     var title: String {
         switch self {
-        case .equipment: return "Thiết bị"
-        case .folder: return "Thư mục"
+        case .equipment: return Language.Import.typeEquipment
+        case .folder: return Language.Import.typeFolder
         }
     }
 }
@@ -98,8 +98,8 @@ enum ConnectionType: String, CaseIterable {
     
     var title: String {
         switch self {
-        case .bluetooth: return "Bluetooth"
-        case .wifi: return "Wifi"
+        case .bluetooth: return Language.ConnectionType.bluetooth
+        case .wifi: return Language.ConnectionType.wifi
         }
     }
 }

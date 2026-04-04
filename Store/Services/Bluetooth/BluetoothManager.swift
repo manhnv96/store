@@ -24,7 +24,9 @@ class BluetoothManager: NSObject {
     var failedPeripheral: CBPeripheral?
     
     var disconnectedPeripherals: [CBPeripheral] {
-        Array(discoveredPeripherals.subtracting(connectingPeripherals))
+        Array(discoveredPeripherals
+            .subtracting(connectingPeripherals)
+            .subtracting(connectedPeripherals))
     }
     
     var isPoweredOn: Bool = false
@@ -56,12 +58,9 @@ class BluetoothManager: NSObject {
     }
     
     func cancelConnection(_ peripheral: CBPeripheral) {
-        guard connectingPeripherals.contains(peripheral) else {
-            return
-        }
-        
+        safeRemove(peripheral: peripheral, from: &connectingPeripherals)
+        safeRemove(peripheral: peripheral, from: &connectedPeripherals)
         centralManager?.cancelPeripheralConnection(peripheral)
-        connectingPeripherals.remove(peripheral)
     }
 }
 
@@ -87,7 +86,7 @@ extension BluetoothManager: CBCentralManagerDelegate {
             return
         }
         
-        debug("centralManager didDiscover \(peripheral.name) - rssi \(RSSI)")
+        debug("centralManager didDiscover \(peripheral.name ?? "unknown") - rssi \(RSSI)")
         safeInsert(peripheral: peripheral, to: &discoveredPeripherals)
     }
     
@@ -95,7 +94,7 @@ extension BluetoothManager: CBCentralManagerDelegate {
         _ central: CBCentralManager,
         didConnect peripheral: CBPeripheral
     ) {
-        debug("centralManager didConnect \(peripheral.name)")
+        debug("centralManager didConnect \(peripheral.name ?? "unknown")")
         safeRemove(peripheral: peripheral, from: &connectingPeripherals)
         safeInsert(peripheral: peripheral, to: &connectedPeripherals)
     }
@@ -105,7 +104,7 @@ extension BluetoothManager: CBCentralManagerDelegate {
         didFailToConnect peripheral: CBPeripheral,
         error: Error?
     ) {
-        debug("centralManager didFailToConnect \(peripheral.name) error: \(error?.localizedDescription)")
+        debug("centralManager didFailToConnect \(peripheral.name ?? "unknown") error: \(error?.localizedDescription ?? "none")")
         safeRemove(peripheral: peripheral, from: &connectingPeripherals)
     }
     
@@ -114,7 +113,7 @@ extension BluetoothManager: CBCentralManagerDelegate {
         didDisconnectPeripheral peripheral: CBPeripheral,
         error: Error?
     ) {
-        debug("centralManager didDisconnectPeripheral \(peripheral.name) error: \(error?.localizedDescription)")
+        debug("centralManager didDisconnectPeripheral \(peripheral.name ?? "unknown") error: \(error?.localizedDescription ?? "none")")
         safeRemove(peripheral: peripheral, from: &connectedPeripherals)
     }
 }

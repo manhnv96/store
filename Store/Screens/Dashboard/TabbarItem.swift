@@ -17,7 +17,7 @@ struct TabbarItem: Identifiable, Equatable, Hashable {
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
-        hasher.finalize()
+        debug(hasher.finalize())
     }
     
     static func == (lhs: TabbarItem, rhs: TabbarItem) -> Bool {
@@ -29,7 +29,7 @@ extension TabbarItem {
     static let home: TabbarItem = {
         TabbarItem(
             type: .home,
-            title: "Home",
+            title: Language.Tabbar.home,
             image: "house",
             selectedImage: "house.fill"
         )
@@ -38,7 +38,7 @@ extension TabbarItem {
     static let cart: TabbarItem = {
         TabbarItem(
             type: .cart,
-            title: "Cart",
+            title: Language.Tabbar.cart,
             image: "cart",
             selectedImage: "cart.fill"
         )
@@ -47,7 +47,7 @@ extension TabbarItem {
     static let user: TabbarItem = {
         TabbarItem(
             type: .user,
-            title: "Person",
+            title: Language.Tabbar.user,
             image: "person.circle",
             selectedImage: "person.circle.fill"
         )

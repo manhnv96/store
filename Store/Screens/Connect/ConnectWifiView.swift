@@ -11,11 +11,11 @@ import CoreBluetooth
 
 struct ConnectWifiView: View {
     
-    let titleOfItem: String = "Tên thiết bị"
-    let titlePlaceholder: String = "Nhập tên gợi nhớ"
+    let titleOfItem = Language.Device.nameTitle
+    let titlePlaceholder = Language.Device.namePlaceholder
     @State var titleValue: String = ""
-    
-    let connect = "Kết nối"
+
+    let connect = Language.Action.connect
     @State var enableConnect: Bool = false
     
     @State var selectedConnection: String = "BLE"

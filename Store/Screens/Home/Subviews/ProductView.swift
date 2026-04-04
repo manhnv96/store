@@ -36,6 +36,8 @@ struct ProductView: View {
 }
 
 #Preview(traits: .sizeThatFitsLayout) {
-    ProductView(product: Product.mocks[0])
-        .frame(width: 414, height: 9/16 * 414)
+    if let product = Product.mocks.first {
+        ProductView(product: product)
+            .frame(width: 414, height: 9/16 * 414)
+    }
 }

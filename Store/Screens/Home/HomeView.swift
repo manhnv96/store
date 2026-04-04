@@ -43,7 +43,7 @@ struct HomeView: View {
     }
     
     private var titleView: some View {
-        Text("Your home page")
+        Text(Language.Tabbar.home)
             .font(.system(size: 32, design: .default))
             .bold()
             .padding(.all)

@@ -38,6 +38,7 @@ struct ProductDetailView: View {
 }
 
 #Preview {
-    let product = Product.mocks[0]
-    ProductDetailView(product: product)
+    if let product = Product.mocks.first {
+        ProductDetailView(product: product)
+    }
 }

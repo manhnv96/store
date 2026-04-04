@@ -25,16 +25,16 @@ struct BluetoothDiscoveryView: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .center, spacing: 8) {
                 if isPreparingBluetooth {
-                    Text("Kiểm tra Bluetooth")
+                    Text(Language.Bluetooth.checking)
                         .foregroundStyle(Color(.systemBlue))
                     ProgressView()
                         .tint(Color(.systemBlue))
                 } else {
                     if !bluetooth.isPoweredOn {
-                        Text("Hãy bật Bluetooth để bắt đầu")
+                        Text(Language.Bluetooth.turnOnPrompt)
                             .foregroundStyle(Color(.red))
                     } else {
-                        Text("Chọn thiết bị")
+                        Text(Language.Bluetooth.selectDevice)
                             .foregroundStyle(Color(.systemBlue))
                         ProgressView()
                             .tint(Color(.systemBlue))
@@ -69,11 +69,11 @@ struct BluetoothDiscoveryView: View {
     }
     
     var bluetoothUnavailableView: some View {
-        ContentUnavailableView(
-            "Chưa bật Bluetooth",
-            systemImage: "bolt.slash.fill",
-            description: Text("Hãy kiểm tra lại cài đặt bluetooth của bạn và thử lại")
-        )
+        ContentUnavailableView {
+            Label(Language.Bluetooth.unavailableTitle, systemImage: "bolt.slash.fill")
+        } description: {
+            Text(Language.Bluetooth.unavailableDescription)
+        }
     }
     
     var discoveredPerpheralsView: some View {
@@ -92,7 +92,7 @@ struct BluetoothDiscoveryView: View {
         isPreparingBluetooth = true
         let startDate = Date()
         verifyBluetoothTimer?.invalidate()
-        verifyBluetoothTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
+        let timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
             let elapsed = Date().timeIntervalSince(startDate)
             if elapsed >= 2.0 {
                 timer.invalidate()
@@ -100,7 +100,8 @@ struct BluetoothDiscoveryView: View {
                 isPreparingBluetooth = false
             }
         }
-        RunLoop.main.add(verifyBluetoothTimer!, forMode: .common)
+        verifyBluetoothTimer = timer
+        RunLoop.main.add(timer, forMode: .common)
     }
     
     private func stopCheckingBluetooth() {
