@@ -1,5 +1,5 @@
 //
-//  BLEConnectedView.swift
+//  ConnectSuccessView.swift
 //  Store
 //
 //  Created by Mạnh Nguyễn Văn on 04/4/26.
@@ -7,10 +7,11 @@
 
 import SwiftUI
 import CoreBluetooth
+import Lottie
 
 /// Displays the list of currently connected BLE peripherals
 /// and lets the user disconnect any of them.
-struct BLEConnectedView: View {
+struct ConnectSuccessView: View {
 
     @Binding var bluetooth: BluetoothManager
 
@@ -142,5 +143,5 @@ struct BLEConnectedView: View {
 
 #Preview {
     @Previewable @State var bluetooth = BluetoothManager()
-    BLEConnectedView(bluetooth: $bluetooth)
+    ConnectSuccessView(bluetooth: $bluetooth)
 }

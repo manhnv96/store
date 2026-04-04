@@ -1,5 +1,5 @@
 //
-//  ImportNewView.swift
+//  ConnectView.swift
 //  Store
 //
 //  Created by Mạnh Nguyễn Văn on 20/3/26.
@@ -8,7 +8,7 @@
 import SwiftUI
 import CoreBluetooth
 
-struct ImportNewView: View {
+struct ConnectView: View {
     @State var title: String = Language.Import.title
     var types: [ImportType] = ImportType.allCases
     @State var selectedImportType: ImportType? = ImportType.allCases.first
@@ -45,9 +45,9 @@ struct ImportNewView: View {
             selectConnection
             switch selectedConnection {
             case .bluetooth:
-                BLEDiscoveryView()
+                ConnectViaBleView()
             case .wifi:
-                ConnectWifiView()
+                ConnectViaWifiView()
             case .none:
                 EmptyView()
             }
@@ -105,5 +105,5 @@ enum ConnectionType: String, CaseIterable {
 }
 
 #Preview {
-    ImportNewView()
+    ConnectView()
 }

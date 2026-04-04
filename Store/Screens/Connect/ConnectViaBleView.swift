@@ -1,5 +1,5 @@
 //
-//  BLEDiscoveryView.swift
+//  ConnectViaBleView.swift
 //  Store
 //
 //  Created by Mạnh Nguyễn Văn on 25/3/26.
@@ -8,7 +8,7 @@
 import SwiftUI
 import CoreBluetooth
 
-struct BLEDiscoveryView: View {
+struct ConnectViaBleView: View {
     
     let titleOfItem = Language.Device.nameTitle
     let titlePlaceholder = Language.Device.namePlaceholder
@@ -66,7 +66,7 @@ struct BLEDiscoveryView: View {
             }
         }
         .navigationDestination(isPresented: $navigateToConnected) {
-            BLEConnectedView(bluetooth: $bluetoothManager)
+            ConnectSuccessView(bluetooth: $bluetoothManager)
         }
         .onChange(of: bluetoothManager.connectedPeripherals) { _, connected in
             guard let selected = selectedPeripheral else { return }
@@ -78,5 +78,5 @@ struct BLEDiscoveryView: View {
 }
 
 #Preview {
-    BLEDiscoveryView()
+    ConnectViaBleView()
 }

@@ -37,7 +37,7 @@ struct HomeView: View {
                     )
             }
             .navigationDestination(for: Bool.self) { bool in
-                ImportNewView()
+                ConnectView()
             }
         }
     }

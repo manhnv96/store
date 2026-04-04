@@ -1,5 +1,5 @@
 //
-//  ConnectWifiView.swift
+//  ConnectViaWifiView.swift
 //  Store
 //
 //  Created by Mạnh Nguyễn Văn on 26/3/26.
@@ -9,7 +9,7 @@ import SwiftUI
 import NetworkExtension
 import CoreBluetooth
 
-struct ConnectWifiView: View {
+struct ConnectViaWifiView: View {
     
     let titleOfItem = Language.Device.nameTitle
     let titlePlaceholder = Language.Device.namePlaceholder
@@ -68,5 +68,5 @@ struct ConnectWifiView: View {
 }
 
 #Preview {
-    ConnectWifiView()
+    ConnectViaWifiView()
 }

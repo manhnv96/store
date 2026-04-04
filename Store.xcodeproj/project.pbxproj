@@ -14,6 +14,8 @@
 		41A1454E2F6D98DB00835BA2 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 41A1454D2F6D98DB00835BA2 /* FirebaseStorage */; };
 		41D58B7A2F7557EC000E705A /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 41D58B792F7557EC000E705A /* IQKeyboardManagerSwift */; };
 		41E12BD32F80A35500BA9E2A /* swiftgen.yml in Resources */ = {isa = PBXBuildFile; fileRef = 41E12BD22F80A35500BA9E2A /* swiftgen.yml */; };
+		41E12D502F80E5F900BA9E2A /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 41E12D4F2F80E5F900BA9E2A /* Lottie */; };
+		41E12D522F80E5F900BA9E2A /* Lottie-Dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = 41E12D512F80E5F900BA9E2A /* Lottie-Dynamic */; };
 		41E83DAE2F7AD8A400121AF6 /* ProjectRules.md in Resources */ = {isa = PBXBuildFile; fileRef = 41E83DAD2F7AD8A400121AF6 /* ProjectRules.md */; };
 /* End PBXBuildFile section */
 
@@ -60,6 +62,10 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				Store/Generated/Assets.swift,
+				Store/Generated/Language.swift,
+				Store/Localizable.xcstrings,
+				swiftgen.yml,
 			);
 			target = 419EAD902DAFE82A00C136D3 /* Store */;
 		};
@@ -92,6 +98,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				41A1454C2F6D98DB00835BA2 /* FirebaseCore in Frameworks */,
+				41E12D522F80E5F900BA9E2A /* Lottie-Dynamic in Frameworks */,
+				41E12D502F80E5F900BA9E2A /* Lottie in Frameworks */,
 				4116B7822F70B0B500CFB90A /* Alamofire in Frameworks */,
 				41A1454E2F6D98DB00835BA2 /* FirebaseStorage in Frameworks */,
 				419E14042F74A1A000C00F68 /* AlertToast in Frameworks */,
@@ -166,6 +174,8 @@
 				4116B7812F70B0B500CFB90A /* Alamofire */,
 				419E14032F74A1A000C00F68 /* AlertToast */,
 				41D58B792F7557EC000E705A /* IQKeyboardManagerSwift */,
+				41E12D4F2F80E5F900BA9E2A /* Lottie */,
+				41E12D512F80E5F900BA9E2A /* Lottie-Dynamic */,
 			);
 			productName = Store;
 			productReference = 419EAD912DAFE82A00C136D3 /* Store.app */;
@@ -255,6 +265,7 @@
 				4116B7802F70B0B500CFB90A /* XCRemoteSwiftPackageReference "Alamofire" */,
 				419E14022F74A1A000C00F68 /* XCRemoteSwiftPackageReference "AlertToast" */,
 				41D58B782F7557EC000E705A /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
+				41E12D4E2F80E5F900BA9E2A /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 419EAD922DAFE82A00C136D3 /* Products */;
@@ -460,7 +471,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 28C4Z9L4S6;
@@ -468,12 +479,13 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Store/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Ứng dụng cần Bluetooth để kết nối tới các thiết bị Smart iOT của bạn.";
 				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "Ứng dụng cần truy cập Bluetooth để tìm kiếm và kết nối với các thiết bị thông minh, giúp bạn điều khiển hệ thống smart home một cách nhanh chóng.";
-				INFOPLIST_KEY_NSBluetoothWhileInUseUsageDescription = "";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Ứng dụng sẽ tự động kết nối tới các thiết bị Smart iOT của bạn khi bạn tới điạ điểm gần chúng.";
+				INFOPLIST_KEY_NSMainNibFile = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleLightContent;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
@@ -499,7 +511,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 28C4Z9L4S6;
@@ -507,12 +519,13 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Store/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Ứng dụng cần Bluetooth để kết nối tới các thiết bị Smart iOT của bạn.";
 				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "Ứng dụng cần truy cập Bluetooth để tìm kiếm và kết nối với các thiết bị thông minh, giúp bạn điều khiển hệ thống smart home một cách nhanh chóng.";
-				INFOPLIST_KEY_NSBluetoothWhileInUseUsageDescription = "";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Ứng dụng sẽ tự động kết nối tới các thiết bị Smart iOT của bạn khi bạn tới điạ điểm gần chúng.";
+				INFOPLIST_KEY_NSMainNibFile = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleLightContent;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
@@ -687,6 +700,14 @@
 				minimumVersion = 8.0.2;
 			};
 		};
+		41E12D4E2F80E5F900BA9E2A /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.6.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -719,6 +740,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 41D58B782F7557EC000E705A /* XCRemoteSwiftPackageReference "IQKeyboardManager" */;
 			productName = IQKeyboardManagerSwift;
+		};
+		41E12D4F2F80E5F900BA9E2A /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 41E12D4E2F80E5F900BA9E2A /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
+		};
+		41E12D512F80E5F900BA9E2A /* Lottie-Dynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 41E12D4E2F80E5F900BA9E2A /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = "Lottie-Dynamic";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
