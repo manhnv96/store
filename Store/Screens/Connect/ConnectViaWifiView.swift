@@ -45,18 +45,14 @@ struct ConnectViaWifiView: View {
             if let selectedPeripheral {
                 HStack {
                     Spacer()
-                    ComponentButton(
-                        title: connect,
-                        state: Binding(
-                            get: {
-                                bluetoothManager.connectingPeripherals.contains(selectedPeripheral) ? .performing : .normal
-                            },
-                            set: { value in }
-                        ), action: {
-                            bluetoothManager.stopScan()
-                            bluetoothManager.connect(to: selectedPeripheral)
-                        }
-                    )
+                    ComponentButton(title: connect) {
+                        bluetoothManager.stopScan()
+                        bluetoothManager.connect(to: selectedPeripheral)
+                    }
+                    .state(Binding(
+                        get: { bluetoothManager.connectingPeripherals.contains(selectedPeripheral) ? .performing : .normal },
+                        set: { _ in }
+                    ))
                     Spacer()
                 }
             }

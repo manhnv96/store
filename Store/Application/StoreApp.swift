@@ -10,15 +10,18 @@ import IQKeyboardManagerSwift
 
 @main
 struct StoreApp: App {
-    
+
+    private let persistenceController = PersistenceController.shared
+
     init() {
         IQKeyboardManager.shared.isEnabled = true
         IQKeyboardManager.shared.resignOnTouchOutside = true
     }
-    
+
     var body: some Scene {
         WindowGroup {
             DashboardView()
+                .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
 }

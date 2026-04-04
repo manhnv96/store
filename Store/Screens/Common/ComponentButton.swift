@@ -9,57 +9,104 @@ import SwiftUI
 
 enum ComponentButtonState {
     case normal, disabled, performing
-    
-    var enableUserInteraction: Bool {
+}
+
+extension ComponentButtonState {
+    var interactable: Bool {
         self == .normal
     }
 }
 
+enum ComponentButtonStyle {
+    case primary
+    case secondary
+}
+
 struct ComponentButton: View {
     
-    let normal: String
-    var disabled: String?
-    var performing: String?
-    var activeColor = Color.blue
-    var inactiveColor = Color(.systemGray2)
+    // MARK: - Required
+    private let normal: String
+    private let action: () -> Void
     
-    var title: String {
-        switch state {
-        case .normal:
-            normal
-        case .disabled:
-            disabled ?? normal
-        case .performing:
-            performing ?? normal
+    // MARK: - Configurable via builder
+    private var style: ComponentButtonStyle = .primary
+    private var disabledTitle: String?
+    private var performingTitle: String?
+    private var activeColor: Color = .blue
+    private var inactiveColor: Color = Color(.systemGray2)
+    private var fillWidth: Bool = false
+    private var stateBinding: Binding<ComponentButtonState> = .constant(.normal)
+    
+    // MARK: - Init
+    
+    init(title: String, action: @escaping () -> Void) {
+        self.normal = title
+        self.action = action
+    }
+    
+    // MARK: - Builder
+    
+    func style(_ style: ComponentButtonStyle) -> Self {
+        var copy = self; copy.style = style; return copy
+    }
+    
+    func disabledTitle(_ title: String) -> Self {
+        var copy = self; copy.disabledTitle = title; return copy
+    }
+    
+    func performingTitle(_ title: String) -> Self {
+        var copy = self; copy.performingTitle = title; return copy
+    }
+    
+    func activeColor(_ color: Color) -> Self {
+        var copy = self; copy.activeColor = color; return copy
+    }
+    
+    func inactiveColor(_ color: Color) -> Self {
+        var copy = self; copy.inactiveColor = color; return copy
+    }
+    
+    func fillWidth(_ fill: Bool = true) -> Self {
+        var copy = self; copy.fillWidth = fill; return copy
+    }
+    
+    func state(_ binding: Binding<ComponentButtonState>) -> Self {
+        var copy = self; copy.stateBinding = binding; return copy
+    }
+    
+    // MARK: - Private helpers
+    
+    private var currentState: ComponentButtonState {
+        stateBinding.wrappedValue
+    }
+    
+    private var title: String {
+        switch currentState {
+        case .normal:    normal
+        case .disabled:  disabledTitle ?? normal
+        case .performing: performingTitle ?? normal
         }
     }
     
-    var foregroundColor: Color {
-        state.enableUserInteraction ? activeColor : inactiveColor
+    private var foregroundColor: Color {
+        switch style {
+        case .primary:
+                .white
+        case .secondary:
+            currentState.interactable ? activeColor : inactiveColor
+        }
     }
     
-    @Binding var state: ComponentButtonState
-    var action: () -> Void
-    
-    @State private var phase: CGFloat = 0
-    
-    init(
-        title normal: String,
-        disabled: String? = nil,
-        performing: String? = nil,
-        activeColor: Color = Color.blue,
-        inactiveColor: Color = Color(.systemGray2),
-        state: Binding<ComponentButtonState>,
-        action: @escaping () -> Void
-    ) {
-        self.normal = normal
-        self.disabled = disabled
-        self.performing = performing
-        self.activeColor = activeColor
-        self.inactiveColor = activeColor
-        _state = state
-        self.action = action
+    private var backgroundColor: Color {
+        switch style {
+        case .primary:
+            currentState.interactable ? activeColor : inactiveColor
+        case .secondary:
+                .clear
+        }
     }
+    
+    // MARK: - Body
     
     var body: some View {
         Button {
@@ -69,23 +116,36 @@ struct ComponentButton: View {
                 Text(title).font(.title3.weight(.semibold))
                     .foregroundStyle(foregroundColor)
                 
-                if state == .performing {
+                if currentState == .performing {
                     ProgressView()
                 }
             }
             .padding(.horizontal, 24)
-            .padding(.vertical, 8)
-            .overlay(
-                Capsule().stroke(foregroundColor, lineWidth: 2)
-            )
-            .background(Capsule().fill(Color.clear))
-            .opacity(state.enableUserInteraction ? 1 : 0.8)
+            .frame(maxWidth: fillWidth ? .infinity : nil, minHeight: 44)
+            .overlay {
+                switch style {
+                case .secondary:
+                    Capsule().stroke(foregroundColor, lineWidth: 2)
+                case .primary:
+                    EmptyView()
+                }
+            }
+            .background(Capsule().fill(backgroundColor))
+            .opacity(currentState.interactable ? 1 : 0.8)
         }
-        .disabled(!state.enableUserInteraction)
+        .disabled(!currentState.interactable)
     }
 }
 
 #Preview {
-    @Previewable @State var state: ComponentButtonState = .performing
-    ComponentButton(title: "Connect", state: $state, action: {})
+    VStack(spacing: 16) {
+        ComponentButton(title: "Primary", action: {})
+            .style(.primary)
+            .fillWidth()
+        
+        ComponentButton(title: "Secondary", action: {})
+            .style(.secondary)
+            .fillWidth()
+    }
+    .padding()
 }

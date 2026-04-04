@@ -49,24 +49,22 @@ struct ConnectViaBleView: View {
             if let selectedPeripheral {
                 HStack {
                     Spacer()
-                    ComponentButton(
-                        title: connect,
-                        state: Binding(
-                            get: {
-                                bluetoothManager.connectingPeripherals.contains(selectedPeripheral) ? .performing : .normal
-                            },
-                            set: { value in }
-                        )
-                    ) {
+                    ComponentButton(title: connect) {
                         bluetoothManager.stopScan()
                         bluetoothManager.connect(to: selectedPeripheral)
                     }
+                    .state(Binding(
+                        get: { bluetoothManager.connectingPeripherals.contains(selectedPeripheral) ? .performing : .normal },
+                        set: { _ in }
+                    ))
                     Spacer()
                 }
             }
         }
         .navigationDestination(isPresented: $navigateToConnected) {
-            ConnectSuccessView(bluetooth: $bluetoothManager)
+            if let selectedPeripheral {
+                ConnectSuccessView(configuration: selectedPeripheral)
+            }
         }
         .onChange(of: bluetoothManager.connectedPeripherals) { _, connected in
             guard let selected = selectedPeripheral else { return }
@@ -79,4 +77,11 @@ struct ConnectViaBleView: View {
 
 #Preview {
     ConnectViaBleView()
+}
+
+
+extension CBPeripheral: ConnectSuccessConfiguration {
+    var title: String {
+        "Kết nối thiết bị \(name ?? "????") thành công"
+    }
 }

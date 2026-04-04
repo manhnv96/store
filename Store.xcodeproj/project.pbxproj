@@ -14,8 +14,7 @@
 		41A1454E2F6D98DB00835BA2 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 41A1454D2F6D98DB00835BA2 /* FirebaseStorage */; };
 		41D58B7A2F7557EC000E705A /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 41D58B792F7557EC000E705A /* IQKeyboardManagerSwift */; };
 		41E12BD32F80A35500BA9E2A /* swiftgen.yml in Resources */ = {isa = PBXBuildFile; fileRef = 41E12BD22F80A35500BA9E2A /* swiftgen.yml */; };
-		41E12D502F80E5F900BA9E2A /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 41E12D4F2F80E5F900BA9E2A /* Lottie */; };
-		41E12D522F80E5F900BA9E2A /* Lottie-Dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = 41E12D512F80E5F900BA9E2A /* Lottie-Dynamic */; };
+		41E12D682F80F31400BA9E2A /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 41E12D672F80F31400BA9E2A /* Lottie */; };
 		41E83DAE2F7AD8A400121AF6 /* ProjectRules.md in Resources */ = {isa = PBXBuildFile; fileRef = 41E83DAD2F7AD8A400121AF6 /* ProjectRules.md */; };
 /* End PBXBuildFile section */
 
@@ -98,8 +97,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				41A1454C2F6D98DB00835BA2 /* FirebaseCore in Frameworks */,
-				41E12D522F80E5F900BA9E2A /* Lottie-Dynamic in Frameworks */,
-				41E12D502F80E5F900BA9E2A /* Lottie in Frameworks */,
+				41E12D682F80F31400BA9E2A /* Lottie in Frameworks */,
 				4116B7822F70B0B500CFB90A /* Alamofire in Frameworks */,
 				41A1454E2F6D98DB00835BA2 /* FirebaseStorage in Frameworks */,
 				419E14042F74A1A000C00F68 /* AlertToast in Frameworks */,
@@ -174,8 +172,7 @@
 				4116B7812F70B0B500CFB90A /* Alamofire */,
 				419E14032F74A1A000C00F68 /* AlertToast */,
 				41D58B792F7557EC000E705A /* IQKeyboardManagerSwift */,
-				41E12D4F2F80E5F900BA9E2A /* Lottie */,
-				41E12D512F80E5F900BA9E2A /* Lottie-Dynamic */,
+				41E12D672F80F31400BA9E2A /* Lottie */,
 			);
 			productName = Store;
 			productReference = 419EAD912DAFE82A00C136D3 /* Store.app */;
@@ -265,7 +262,7 @@
 				4116B7802F70B0B500CFB90A /* XCRemoteSwiftPackageReference "Alamofire" */,
 				419E14022F74A1A000C00F68 /* XCRemoteSwiftPackageReference "AlertToast" */,
 				41D58B782F7557EC000E705A /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
-				41E12D4E2F80E5F900BA9E2A /* XCRemoteSwiftPackageReference "lottie-ios" */,
+				41E12D662F80F31400BA9E2A /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 419EAD922DAFE82A00C136D3 /* Products */;
@@ -700,7 +697,7 @@
 				minimumVersion = 8.0.2;
 			};
 		};
-		41E12D4E2F80E5F900BA9E2A /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+		41E12D662F80F31400BA9E2A /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
 			requirement = {
@@ -741,15 +738,10 @@
 			package = 41D58B782F7557EC000E705A /* XCRemoteSwiftPackageReference "IQKeyboardManager" */;
 			productName = IQKeyboardManagerSwift;
 		};
-		41E12D4F2F80E5F900BA9E2A /* Lottie */ = {
+		41E12D672F80F31400BA9E2A /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 41E12D4E2F80E5F900BA9E2A /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			package = 41E12D662F80F31400BA9E2A /* XCRemoteSwiftPackageReference "lottie-ios" */;
 			productName = Lottie;
-		};
-		41E12D512F80E5F900BA9E2A /* Lottie-Dynamic */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 41E12D4E2F80E5F900BA9E2A /* XCRemoteSwiftPackageReference "lottie-ios" */;
-			productName = "Lottie-Dynamic";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

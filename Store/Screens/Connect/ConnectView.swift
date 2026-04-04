@@ -92,7 +92,7 @@ enum ImportType: String, CaseIterable, SegmentedPickerItem {
     }
 }
 
-enum ConnectionType: String, CaseIterable {
+enum ConnectionType: String, CaseIterable, Codable, Hashable {
     case bluetooth
     case wifi
     
