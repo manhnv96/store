@@ -29,48 +29,51 @@ struct ConnectViaBleView: View {
     var repository: any DeviceRepository
 
     var body: some View {
-        ScrollViewReader { proxy in
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    BluetoothDiscoveryView(
-                        bluetooth: $bluetoothManager,
-                        selectedPeripheral: $selectedPeripheral
-                    )
-                    .padding(.vertical, 8)
-
-                    if selectedPeripheral != nil {
-                        SimpleTextField(
-                            axis: .vertical,
-                            title: titleOfItem,
-                            placeholder: titlePlaceholder,
-                            value: $titleValue
+        VStack(spacing: 0) {
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        BluetoothDiscoveryView(
+                            bluetooth: $bluetoothManager,
+                            selectedPeripheral: $selectedPeripheral
                         )
-                        .focused($editting)
-                        .id("deviceNameField")
-                    }
+                        .padding(.vertical, 8)
 
-                    if let selectedPeripheral {
-                        ComponentButton(title: connect) {
-                            bluetoothManager.stopScan()
-                            bluetoothManager.connect(to: selectedPeripheral)
+                        if selectedPeripheral != nil {
+                            SimpleTextField(
+                                axis: .vertical,
+                                title: titleOfItem,
+                                placeholder: titlePlaceholder,
+                                value: $titleValue
+                            )
+                            .focused($editting)
+                            .id("deviceNameField")
                         }
-                        .fillWidth()
-                        .state(Binding(
-                            get: { bluetoothManager.connectingPeripherals.contains(selectedPeripheral) ? .performing : .normal },
-                            set: { _ in }
-                        ))
                     }
                 }
+                .scrollBounceBehavior(.basedOnSize)
+                .scrollDismissesKeyboard(.interactively)
+                .onChange(of: selectedPeripheral) { _, newValue in
+                    guard let id = newValue?.identifier else { return }
+                    withAnimation { proxy.scrollTo(id, anchor: .center) }
+                }
+                .onChange(of: editting) { _, focused in
+                    guard focused else { return }
+                    withAnimation { proxy.scrollTo("deviceNameField", anchor: .center) }
+                }
             }
-            .scrollBounceBehavior(.basedOnSize)
-            .scrollDismissesKeyboard(.interactively)
-            .onChange(of: selectedPeripheral) { _, newValue in
-                guard let id = newValue?.identifier else { return }
-                withAnimation { proxy.scrollTo(id, anchor: .center) }
-            }
-            .onChange(of: editting) { _, focused in
-                guard focused else { return }
-                withAnimation { proxy.scrollTo("deviceNameField", anchor: .center) }
+
+            if let selectedPeripheral {
+                ComponentButton(title: connect) {
+                    bluetoothManager.stopScan()
+                    bluetoothManager.connect(to: selectedPeripheral)
+                }
+                .fillWidth()
+                .state(Binding(
+                    get: { bluetoothManager.connectingPeripherals.contains(selectedPeripheral) ? .performing : .normal },
+                    set: { _ in }
+                ))
+                .padding(.top, 12)
             }
         }
         .navigationDestination(isPresented: $navigateToConnected) {

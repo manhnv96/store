@@ -25,17 +25,21 @@ struct CreateFolderView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                parentFolderField
-                nameField
-                iconPickerSection
-                createButton
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    parentFolderField
+                    nameField
+                    iconPickerSection
+                }
             }
+            .scrollBounceBehavior(.basedOnSize)
+            .scrollDismissesKeyboard(.interactively)
+            .onTapGesture { nameFieldFocused = false }
+
+            createButton
+                .padding(.top, 12)
         }
-        .scrollBounceBehavior(.basedOnSize)
-        .scrollDismissesKeyboard(.interactively)
-        .onTapGesture { nameFieldFocused = false }
         .navigationDestination(isPresented: $navigateToDetail) {
             if let createdFolder {
                 FolderDetailView(folder: createdFolder, repository: repository)

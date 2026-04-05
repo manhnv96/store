@@ -28,35 +28,38 @@ struct ConnectViaWifiView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                SimpleTextField(
-                    axis: .vertical,
-                    title: Language.Wifi.ipAddressTitle,
-                    placeholder: Language.Wifi.ipAddressPlaceholder,
-                    value: $ipAddress
-                )
-                .focused($focusedField, equals: .ipAddress)
-                .keyboardType(.decimalPad)
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    SimpleTextField(
+                        axis: .vertical,
+                        title: Language.Wifi.ipAddressTitle,
+                        placeholder: Language.Wifi.ipAddressPlaceholder,
+                        value: $ipAddress
+                    )
+                    .focused($focusedField, equals: .ipAddress)
+                    .keyboardType(.decimalPad)
 
-                SimpleTextField(
-                    axis: .vertical,
-                    title: Language.Device.nameTitle,
-                    placeholder: Language.Device.namePlaceholder,
-                    value: $deviceName
-                )
-                .focused($focusedField, equals: .deviceName)
-
-                ComponentButton(title: Language.Action.connect) {
-                    saveDevice()
+                    SimpleTextField(
+                        axis: .vertical,
+                        title: Language.Device.nameTitle,
+                        placeholder: Language.Device.namePlaceholder,
+                        value: $deviceName
+                    )
+                    .focused($focusedField, equals: .deviceName)
                 }
-                .fillWidth()
-                .state(buttonState)
             }
+            .scrollBounceBehavior(.basedOnSize)
+            .scrollDismissesKeyboard(.interactively)
+            .onTapGesture { focusedField = nil }
+
+            ComponentButton(title: Language.Action.connect) {
+                saveDevice()
+            }
+            .fillWidth()
+            .state(buttonState)
+            .padding(.top, 12)
         }
-        .scrollBounceBehavior(.basedOnSize)
-        .scrollDismissesKeyboard(.interactively)
-        .onTapGesture { focusedField = nil }
         .navigationDestination(isPresented: $navigateToConnected) {
             ConnectSuccessView(
                 configuration: WifiConnectSuccessConfiguration(deviceName: savedDeviceName)

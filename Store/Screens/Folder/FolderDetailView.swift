@@ -157,10 +157,10 @@ struct FolderDetailView: View {
             HStack {
                 Text(Language.FolderDetail.devicesTitle)
                     .font(.title2.weight(.semibold))
-                Spacer()
-                Text("\(devices.count)")
-                    .font(.subheadline)
+                Text("(\(devices.count))")
+                    .font(.title3.weight(.regular))
                     .foregroundStyle(.secondary)
+                Spacer()
             }
 
             if devices.isEmpty {
@@ -184,6 +184,8 @@ struct FolderDetailView: View {
                         .buttonStyle(.plain)
                     }
                 }
+                .padding()
+                .background(Color.gray.opacity(0.08), in: RoundedRectangle(cornerRadius: cornerRadius))
             }
         }
         .navigationDestination(for: ConnectedDevice.self) { device in

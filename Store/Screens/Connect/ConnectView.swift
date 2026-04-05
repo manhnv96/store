@@ -45,11 +45,11 @@ struct ConnectView: View {
             case .folder:
                 folderView
             case nil:
-                EmptyView()
+                Spacer()
             }
-            Spacer()
         }
         .padding(.horizontal, 16)
+        .padding(.bottom, 16)
         .toolbar(.hidden, for: .tabBar)
         .toolbar {
             ToolbarItem(placement: .title) {
@@ -83,7 +83,7 @@ struct ConnectView: View {
                     repository: repository
                 )
             case .none:
-                EmptyView()
+                Spacer()
             }
         }
     }

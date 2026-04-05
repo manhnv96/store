@@ -15,7 +15,10 @@ struct DeviceDetailView: View {
     private let repository: any DeviceRepository
     private let cornerRadius: CGFloat = 8
 
-    init(device: ConnectedDevice, repository: any DeviceRepository = CoreDataDeviceRepository()) {
+    init(
+        device: ConnectedDevice,
+        repository: any DeviceRepository = CoreDataDeviceRepository()
+    ) {
         self.device = device
         self.repository = repository
     }
@@ -32,8 +35,7 @@ struct DeviceDetailView: View {
         .toolbar(.hidden, for: .tabBar)
         .toolbar {
             ToolbarItem(placement: .title) {
-                Label(device.deviceName, systemImage: device.connectionType.iconSystemName)
-                    .font(.title3.weight(.medium))
+                Text(device.deviceName).font(.title3.weight(.medium))
             }
         }
         .task { await loadData() }
@@ -61,30 +63,24 @@ struct DeviceDetailView: View {
 
             VStack(spacing: 0) {
                 infoRow(
-                    title: Language.DeviceDetail.nameLabel,
-                    value: device.deviceName,
-                    icon: device.connectionType.iconSystemName
-                )
-                Divider().padding(.leading, 44)
-                infoRow(
                     title: Language.DeviceDetail.inputNameLabel,
                     value: device.inputName
                 )
                 if !device.deviceDescription.isEmpty {
-                    Divider().padding(.leading, 44)
+                    Divider().padding(.leading)
                     infoRow(
                         title: Language.DeviceDetail.descriptionLabel,
                         value: device.deviceDescription
                     )
                 }
                 if !device.category.isEmpty {
-                    Divider().padding(.leading, 44)
+                    Divider().padding(.leading)
                     infoRow(
                         title: Language.DeviceDetail.categoryLabel,
                         value: device.category
                     )
                 }
-                Divider().padding(.leading, 44)
+                Divider().padding(.leading)
                 infoRow(
                     title: Language.DeviceDetail.folderLabel,
                     value: folderName
@@ -104,15 +100,14 @@ struct DeviceDetailView: View {
             VStack(spacing: 0) {
                 infoRow(
                     title: Language.DeviceDetail.connectionTypeLabel,
-                    value: device.connectionType.title,
-                    icon: device.connectionType.iconSystemName
+                    systemImage: device.connectionType.iconSystemName
                 )
-                Divider().padding(.leading, 44)
+                Divider().padding(.leading)
                 infoRow(
                     title: Language.DeviceDetail.connectedDateLabel,
                     value: device.connectedDate.formatted(date: .abbreviated, time: .shortened)
                 )
-                Divider().padding(.leading, 44)
+                Divider().padding(.leading)
                 infoRow(
                     title: Language.DeviceDetail.lastUpdateLabel,
                     value: device.lastUpdate.formatted(date: .abbreviated, time: .shortened)
@@ -132,16 +127,8 @@ struct DeviceDetailView: View {
         return Language.CreateFolder.parentFolderNone
     }
 
-    private func infoRow(title: String, value: String, icon: String? = nil) -> some View {
+    private func infoRow(title: String, value: String) -> some View {
         HStack(spacing: 12) {
-            if let icon {
-                Image(systemName: icon)
-                    .font(.body)
-                    .foregroundStyle(.secondary)
-                    .frame(width: 28)
-            } else {
-                Color.clear.frame(width: 28, height: 1)
-            }
             Text(title)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -150,6 +137,20 @@ struct DeviceDetailView: View {
                 .font(.subheadline.weight(.medium))
                 .foregroundStyle(.primary)
                 .multilineTextAlignment(.trailing)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+    }
+
+    private func infoRow(title: String, systemImage: String) -> some View {
+        HStack(spacing: 12) {
+            Text(title)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            Spacer()
+            Image(systemName: systemImage)
+                .font(.title3)
+                .foregroundStyle(.primary)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)

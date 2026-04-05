@@ -17,7 +17,6 @@ struct HomeView: View {
     @Namespace private var nameSpace
 
     @State var viewModel: HomeViewModel
-    @State private var path = NavigationPath()
 
     private let itemsPerRow: CGFloat = 2
     private let cornerRadius: CGFloat = 8
@@ -28,7 +27,7 @@ struct HomeView: View {
     }
 
     var body: some View {
-        NavigationStack(path: $path) {
+        NavigationStack {
             VStack(alignment: .leading, spacing: 0) {
                 titleView
                 contentView
@@ -84,7 +83,7 @@ struct HomeView: View {
                         deviceSection(
                             title: Language.Home.recentDevices,
                             devices: viewModel.recentDevices,
-                            folderID: nil
+                            creatable: false
                         )
                     }
 
@@ -108,8 +107,6 @@ struct HomeView: View {
                 }
             }
         }
-        .scrollBounceBehavior(.basedOnSize)
-        .refreshable { await viewModel.refresh() }
     }
 
     // MARK: - Empty states
@@ -251,7 +248,12 @@ struct HomeView: View {
         }
     }
 
-    private func deviceSection(title: String, devices: [ConnectedDevice], folderID: UUID?) -> some View {
+    private func deviceSection(
+        title: String,
+        devices: [ConnectedDevice],
+        folderID: UUID? = nil,
+        creatable: Bool = true
+    ) -> some View {
         Section {
             LazyVGrid(columns: gridColumns, spacing: itemSpacing) {
                 ForEach(devices) { device in
@@ -270,8 +272,10 @@ struct HomeView: View {
                     .fontWeight(.medium)
                     .foregroundStyle(.primary)
                 Spacer()
-                NavigationLink(value: ConnectDestination(folderID: folderID)) {
-                    Image(systemName: "plus").font(.title)
+                if creatable {
+                    NavigationLink(value: ConnectDestination(folderID: folderID)) {
+                        Image(systemName: "plus").font(.title)
+                    }
                 }
             }
             .padding(.horizontal, 16)
