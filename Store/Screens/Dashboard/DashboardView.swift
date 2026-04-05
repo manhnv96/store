@@ -15,20 +15,20 @@ struct DashboardView: View {
     @State private var selectedTab: TabbarItem = .home
     
     private var homeView: some View = {
-        HomeView(viewModel: .init(categories: CategoryItem.mocks, products: Product.mocks))
+        HomeView(viewModel: .init())
     }()
-    
+
     private var cartView: some View = {
         Spacer()
         .tag(TabbarItem.cart)
     }()
-    
+
     private var personView: some View = {
-        HomeView(viewModel: .init(categories: CategoryItem.mocks, products: Product.mocks))
+        HomeView(viewModel: .init())
     }()
-    
+
     private var settingView: some View = {
-        HomeView(viewModel: .init(categories: CategoryItem.mocks, products: Product.mocks))
+        HomeView(viewModel: .init())
     }()
     
     var body: some View {

@@ -79,9 +79,11 @@ final class PersistenceController: @unchecked Sendable {
         let specs: [(String, NSAttributeType)] = [
             ("id", .UUIDAttributeType),
             ("name", .stringAttributeType),
+            ("iconName", .stringAttributeType),
             ("createdDate", .dateAttributeType),
             ("updatedDate", .dateAttributeType),
-            ("lastOpenDate", .dateAttributeType)
+            ("lastOpenDate", .dateAttributeType),
+            ("parentFolderID", .UUIDAttributeType)
         ]
 
         entity.properties = specs.map { name, type in

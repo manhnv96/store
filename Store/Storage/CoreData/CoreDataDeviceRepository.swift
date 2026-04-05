@@ -7,7 +7,7 @@
 
 import CoreData
 
-final class CoreDataDeviceRepository: DeviceRepository {
+final class CoreDataDeviceRepository: DeviceRepository, @unchecked Sendable {
 
     private let context: NSManagedObjectContext
 

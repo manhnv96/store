@@ -11,9 +11,11 @@ import CoreData
 final class FolderEntity: NSManagedObject {
     @NSManaged var id: UUID?
     @NSManaged var name: String?
+    @NSManaged var iconName: String?
     @NSManaged var createdDate: Date?
     @NSManaged var updatedDate: Date?
     @NSManaged var lastOpenDate: Date?
+    @NSManaged var parentFolderID: UUID?
 }
 
 extension FolderEntity {
@@ -28,17 +30,21 @@ extension FolderEntity {
         return DeviceFolder(
             id: id,
             name: name,
+            iconName: iconName ?? "folder",
             createdDate: createdDate,
             updatedDate: updatedDate,
-            lastOpenDate: lastOpenDate
+            lastOpenDate: lastOpenDate,
+            parentFolderID: parentFolderID
         )
     }
 
     func apply(_ folder: DeviceFolder) {
         id = folder.id
         name = folder.name
+        iconName = folder.iconName
         createdDate = folder.createdDate
         updatedDate = folder.updatedDate
         lastOpenDate = folder.lastOpenDate
+        parentFolderID = folder.parentFolderID
     }
 }

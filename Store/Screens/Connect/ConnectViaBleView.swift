@@ -25,40 +25,52 @@ struct ConnectViaBleView: View {
     @FocusState var editting
     @State private var navigateToConnected = false
 
+    var selectedFolderID: UUID?
+    var repository: any DeviceRepository
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        ScrollViewReader { proxy in
             ScrollView {
-                BluetoothDiscoveryView(
-                    bluetooth: $bluetoothManager,
-                    selectedPeripheral: $selectedPeripheral
-                )
-                .padding(.vertical, 8)
+                VStack(alignment: .leading, spacing: 16) {
+                    BluetoothDiscoveryView(
+                        bluetooth: $bluetoothManager,
+                        selectedPeripheral: $selectedPeripheral
+                    )
+                    .padding(.vertical, 8)
+
+                    if selectedPeripheral != nil {
+                        SimpleTextField(
+                            axis: .vertical,
+                            title: titleOfItem,
+                            placeholder: titlePlaceholder,
+                            value: $titleValue
+                        )
+                        .focused($editting)
+                        .id("deviceNameField")
+                    }
+
+                    if let selectedPeripheral {
+                        ComponentButton(title: connect) {
+                            bluetoothManager.stopScan()
+                            bluetoothManager.connect(to: selectedPeripheral)
+                        }
+                        .fillWidth()
+                        .state(Binding(
+                            get: { bluetoothManager.connectingPeripherals.contains(selectedPeripheral) ? .performing : .normal },
+                            set: { _ in }
+                        ))
+                    }
+                }
             }
             .scrollBounceBehavior(.basedOnSize)
-            
-            if selectedPeripheral != nil {
-                SimpleTextField(
-                    axis: .vertical,
-                    title: titleOfItem,
-                    placeholder: titlePlaceholder,
-                    value: $titleValue
-                )
-                .focused($editting)
+            .scrollDismissesKeyboard(.interactively)
+            .onChange(of: selectedPeripheral) { _, newValue in
+                guard let id = newValue?.identifier else { return }
+                withAnimation { proxy.scrollTo(id, anchor: .center) }
             }
-            
-            if let selectedPeripheral {
-                HStack {
-                    Spacer()
-                    ComponentButton(title: connect) {
-                        bluetoothManager.stopScan()
-                        bluetoothManager.connect(to: selectedPeripheral)
-                    }
-                    .state(Binding(
-                        get: { bluetoothManager.connectingPeripherals.contains(selectedPeripheral) ? .performing : .normal },
-                        set: { _ in }
-                    ))
-                    Spacer()
-                }
+            .onChange(of: editting) { _, focused in
+                guard focused else { return }
+                withAnimation { proxy.scrollTo("deviceNameField", anchor: .center) }
             }
         }
         .navigationDestination(isPresented: $navigateToConnected) {
@@ -69,6 +81,20 @@ struct ConnectViaBleView: View {
         .onChange(of: bluetoothManager.connectedPeripherals) { _, connected in
             guard let selected = selectedPeripheral else { return }
             if connected.contains(selected) {
+                let device = ConnectedDevice(
+                    id: UUID(),
+                    deviceName: titleValue.isEmpty ? (selected.name ?? Language.BleConnected.deviceUnnamed) : titleValue,
+                    inputName: selected.name ?? selected.identifier.uuidString,
+                    deviceDescription: "",
+                    category: "",
+                    connectionType: .bluetooth,
+                    connectedDate: .now,
+                    lastUpdate: .now,
+                    parentFolderID: selectedFolderID
+                )
+                Task {
+                    try? await repository.save(device)
+                }
                 navigateToConnected = true
             }
         }
@@ -76,7 +102,7 @@ struct ConnectViaBleView: View {
 }
 
 #Preview {
-    ConnectViaBleView()
+    ConnectViaBleView(repository: CoreDataDeviceRepository())
 }
 
 

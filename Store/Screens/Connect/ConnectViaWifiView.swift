@@ -6,63 +6,124 @@
 //
 
 import SwiftUI
-import NetworkExtension
-import CoreBluetooth
 
 struct ConnectViaWifiView: View {
-    
-    let titleOfItem = Language.Device.nameTitle
-    let titlePlaceholder = Language.Device.namePlaceholder
-    @State var titleValue: String = ""
 
-    let connect = Language.Action.connect
-    @State var enableConnect: Bool = false
-    
-    @State var selectedConnection: String = "BLE"
-    
-    @State var bluetoothManager = BluetoothManager()
-    @State var selectedPeripheral: CBPeripheral?
-    @FocusState var editting
-    
+    @State private var deviceName: String = ""
+    @State private var ipAddress: String = ""
+    @State private var isSaving = false
+    @State private var navigateToConnected = false
+
+    @FocusState private var focusedField: Field?
+
+    var selectedFolderID: UUID?
+    var repository: any DeviceRepository
+
+    private enum Field: Hashable {
+        case ipAddress, deviceName
+    }
+
+    private var canConnect: Bool {
+        !ipAddress.trimmingCharacters(in: .whitespaces).isEmpty
+    }
+
     var body: some View {
-        VStack(alignment: .leading) {
-            ScrollView {
-                VStack(spacing: 24) {
-                    if selectedPeripheral != nil {
-                        SimpleTextField(
-                            axis: .vertical,
-                            title: titleOfItem,
-                            placeholder: titlePlaceholder,
-                            value: $titleValue
-                        )
-                        .focused($editting)
-                    }
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                SimpleTextField(
+                    axis: .vertical,
+                    title: Language.Wifi.ipAddressTitle,
+                    placeholder: Language.Wifi.ipAddressPlaceholder,
+                    value: $ipAddress
+                )
+                .focused($focusedField, equals: .ipAddress)
+                .keyboardType(.decimalPad)
+
+                SimpleTextField(
+                    axis: .vertical,
+                    title: Language.Device.nameTitle,
+                    placeholder: Language.Device.namePlaceholder,
+                    value: $deviceName
+                )
+                .focused($focusedField, equals: .deviceName)
+
+                ComponentButton(title: Language.Action.connect) {
+                    saveDevice()
                 }
-            }
-            .scrollBounceBehavior(.basedOnSize)
-            .scrollDismissesKeyboard(.immediately)
-            
-            if let selectedPeripheral {
-                HStack {
-                    Spacer()
-                    ComponentButton(title: connect) {
-                        bluetoothManager.stopScan()
-                        bluetoothManager.connect(to: selectedPeripheral)
-                    }
-                    .state(Binding(
-                        get: { bluetoothManager.connectingPeripherals.contains(selectedPeripheral) ? .performing : .normal },
-                        set: { _ in }
-                    ))
-                    Spacer()
-                }
+                .fillWidth()
+                .state(buttonState)
             }
         }
-        .onTapGesture {
-            editting = false
+        .scrollBounceBehavior(.basedOnSize)
+        .scrollDismissesKeyboard(.interactively)
+        .onTapGesture { focusedField = nil }
+        .navigationDestination(isPresented: $navigateToConnected) {
+            ConnectSuccessView(
+                configuration: WifiConnectSuccessConfiguration(deviceName: savedDeviceName)
+            )
+        }
+    }
+
+    // MARK: - Helpers
+
+    private var savedDeviceName: String {
+        deviceName.trimmingCharacters(in: .whitespaces).isEmpty
+            ? ipAddress.trimmingCharacters(in: .whitespaces)
+            : deviceName.trimmingCharacters(in: .whitespaces)
+    }
+
+    private var buttonState: Binding<ComponentButtonState> {
+        Binding(
+            get: {
+                if isSaving { return .performing }
+                return canConnect ? .normal : .disabled
+            },
+            set: { _ in }
+        )
+    }
+
+    private func saveDevice() {
+        guard canConnect else { return }
+        let trimmedIP = ipAddress.trimmingCharacters(in: .whitespaces)
+        let name = savedDeviceName
+
+        let device = ConnectedDevice(
+            id: UUID(),
+            deviceName: name,
+            inputName: trimmedIP,
+            deviceDescription: "",
+            category: "",
+            connectionType: .wifi,
+            connectedDate: .now,
+            lastUpdate: .now,
+            parentFolderID: selectedFolderID
+        )
+
+        isSaving = true
+        Task {
+            try? await repository.save(device)
+            isSaving = false
+            navigateToConnected = true
         }
     }
 }
 
+// MARK: - WiFi Success Configuration
+
+struct WifiConnectSuccessConfiguration: ConnectSuccessConfiguration {
+    let deviceName: String
+
+    var title: String {
+        "Kết nối thiết bị \"\(deviceName)\" thành công"
+    }
+
+    var description: String {
+        "Giờ bạn hãy kiểm tra kết nối WiFi với thiết bị."
+    }
+}
+
 #Preview {
-    ConnectViaWifiView()
+    NavigationStack {
+        ConnectViaWifiView(repository: CoreDataDeviceRepository())
+    }
 }

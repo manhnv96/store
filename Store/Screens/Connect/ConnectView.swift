@@ -11,12 +11,30 @@ import CoreBluetooth
 struct ConnectView: View {
     @State var title: String = Language.Import.title
     var types: [ImportType] = ImportType.allCases
-    @State var selectedImportType: ImportType? = ImportType.allCases.first
+    @State var selectedImportType: ImportType?
 
     let titleSelectConnection = Language.Import.connectionLabel
     
     let connectionTypes = ConnectionType.allCases
     @State var selectedConnection: ConnectionType?
+
+
+    let preselectedFolderID: UUID?
+    @State private var folders: [DeviceFolder] = []
+    @State private var selectedFolder: DeviceFolder?
+    private let repository: any DeviceRepository
+
+    init(
+        preselectedFolderID: UUID? = nil,
+        preselectedImportType: ImportType? = nil,
+        preselectedConnectionType: ConnectionType? = nil,
+        repository: any DeviceRepository = CoreDataDeviceRepository()
+    ) {
+        self.preselectedFolderID = preselectedFolderID
+        self._selectedImportType = State(initialValue: preselectedImportType ?? ImportType.allCases.first)
+        self._selectedConnection = State(initialValue: preselectedConnectionType)
+        self.repository = repository
+    }
     
     var body: some View {
         VStack(alignment: .center, spacing: 24) {
@@ -38,16 +56,26 @@ struct ConnectView: View {
                 Text(title).font(.title3).fontWeight(.medium)
             }
         }
+        .task {
+            do {
+                let repo = repository
+                folders = try await Task.detached(priority: .userInitiated) {
+                    try await repo.fetchAllFolders()
+                }.value
+                selectedFolder = folders.first { $0.id == preselectedFolderID }
+            } catch {}
+        }
     }
     
     var equipmentView: some View {
         Group {
+            FolderPickerField(folders: folders, selectedFolder: $selectedFolder)
             selectConnection
             switch selectedConnection {
             case .bluetooth:
-                ConnectViaBleView()
+                ConnectViaBleView(selectedFolderID: selectedFolder?.id, repository: repository)
             case .wifi:
-                ConnectViaWifiView()
+                ConnectViaWifiView(selectedFolderID: selectedFolder?.id, repository: repository)
             case .none:
                 EmptyView()
             }
@@ -74,9 +102,18 @@ struct ConnectView: View {
     }
     
     var folderView: some View {
-        Group {
-            EmptyView()
-        }
+        CreateFolderView(
+            folders: folders,
+            repository: repository,
+            onCreated: {
+                Task {
+                    let repo = repository
+                    folders = (try? await Task.detached(priority: .userInitiated) {
+                        try await repo.fetchAllFolders()
+                    }.value) ?? folders
+                }
+            }
+        )
     }
 }
 
@@ -98,8 +135,19 @@ enum ConnectionType: String, CaseIterable, Codable, Hashable {
     
     var title: String {
         switch self {
-        case .bluetooth: return Language.ConnectionType.bluetooth
-        case .wifi: return Language.ConnectionType.wifi
+        case .bluetooth:
+            return Language.ConnectionType.bluetooth
+        case .wifi:
+            return Language.ConnectionType.wifi
+        }
+    }
+    
+    var iconSystemName: String {
+        switch self {
+        case .bluetooth:
+            return "personalhotspot"
+        case .wifi:
+            return "wifi"
         }
     }
 }
