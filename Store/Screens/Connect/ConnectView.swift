@@ -73,9 +73,15 @@ struct ConnectView: View {
             selectConnection
             switch selectedConnection {
             case .bluetooth:
-                ConnectViaBleView(selectedFolderID: selectedFolder?.id, repository: repository)
+                ConnectViaBleView(
+                    selectedFolderID: selectedFolder?.id,
+                    repository: repository
+                )
             case .wifi:
-                ConnectViaWifiView(selectedFolderID: selectedFolder?.id, repository: repository)
+                ConnectViaWifiView(
+                    selectedFolderID: selectedFolder?.id,
+                    repository: repository
+                )
             case .none:
                 EmptyView()
             }
@@ -103,6 +109,7 @@ struct ConnectView: View {
     
     var folderView: some View {
         CreateFolderView(
+            selectedParent: selectedFolder,
             folders: folders,
             repository: repository,
             onCreated: {

@@ -7,6 +7,7 @@ final class HomeViewModel {
     // MARK: - State
     private(set) var recentDevices: [ConnectedDevice] = []
     private(set) var folders: [DeviceFolder] = []
+    private(set) var allFolders: [DeviceFolder] = []
     private(set) var devicesByFolder: [UUID: [ConnectedDevice]] = [:]
     private(set) var ungroupedDevices: [ConnectedDevice] = []
     private(set) var isLoading = false
@@ -61,7 +62,8 @@ final class HomeViewModel {
             }.value
             
             recentDevices = Array(recent.prefix(2))
-            folders = fetchedFolders
+            allFolders = fetchedFolders
+            folders = fetchedFolders.filter { $0.parentFolderID == nil }
             devicesByFolder = groupedDevices
 
             let recentIDs = Set(recentDevices.map(\.id))
@@ -77,6 +79,10 @@ final class HomeViewModel {
 
     func devices(for folder: DeviceFolder) -> [ConnectedDevice] {
         devicesByFolder[folder.id] ?? []
+    }
+
+    func subFolders(for folder: DeviceFolder) -> [DeviceFolder] {
+        allFolders.filter { $0.parentFolderID == folder.id }
     }
 }
 

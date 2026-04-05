@@ -35,7 +35,7 @@ struct FolderDetailView: View {
         .toolbar(.hidden, for: .tabBar)
         .toolbar {
             ToolbarItem(placement: .title) {
-                Label(folder.name, systemImage: folder.iconName)
+                Text(folder.name)
                     .font(.title3.weight(.medium))
             }
         }
@@ -68,21 +68,17 @@ struct FolderDetailView: View {
 
             VStack(spacing: 0) {
                 infoRow(
-                    title: Language.FolderDetail.nameLabel,
-                    value: folder.name,
-                    icon: folder.iconName
-                )
-                Divider().padding(.leading, 44)
-                infoRow(
                     title: Language.FolderDetail.iconLabel,
                     systemImage: folder.iconName
                 )
-                Divider().padding(.leading, 44)
+                Divider().padding(.leading)
+                
                 infoRow(
                     title: Language.FolderDetail.parentLabel,
                     value: parentFolderName
                 )
-                Divider().padding(.leading, 44)
+                Divider().padding(.leading)
+                
                 infoRow(
                     title: Language.FolderDetail.createdDateLabel,
                     value: folder.createdDate.formatted(date: .abbreviated, time: .shortened)
@@ -102,14 +98,6 @@ struct FolderDetailView: View {
 
     private func infoRow(title: String, value: String, icon: String? = nil) -> some View {
         HStack(spacing: 12) {
-            if let icon {
-                Image(systemName: icon)
-                    .font(.body)
-                    .foregroundStyle(.secondary)
-                    .frame(width: 28)
-            } else {
-                Color.clear.frame(width: 28, height: 1)
-            }
             Text(title)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -125,7 +113,6 @@ struct FolderDetailView: View {
 
     private func infoRow(title: String, systemImage: String) -> some View {
         HStack(spacing: 12) {
-            Color.clear.frame(width: 28, height: 1)
             Text(title)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -138,43 +125,24 @@ struct FolderDetailView: View {
         .padding(.vertical, 12)
     }
 
-    // MARK: - Sub-folders
+    // MARK: - Sub-folders & Devices
+
+    private let gridColumns = Array(
+        repeating: GridItem(.flexible(), spacing: 16),
+        count: 2
+    )
 
     private var subFoldersSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(Language.FolderDetail.subFoldersTitle)
                 .font(.title2.weight(.semibold))
 
-            VStack(spacing: 0) {
-                ForEach(Array(subFolders.enumerated()), id: \.element.id) { index, sub in
+            LazyVGrid(columns: gridColumns, spacing: itemSpacing) {
+                ForEach(subFolders) { sub in
                     NavigationLink(value: sub) {
-                        HStack(spacing: 12) {
-                            Image(systemName: sub.iconName)
-                                .font(.title3)
-                                .foregroundStyle(.blue)
-                                .frame(width: 32)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(sub.name)
-                                    .font(.body.weight(.medium))
-                                    .foregroundStyle(.primary)
-                                let childCount = allFolders.filter { $0.parentFolderID == sub.id }.count
-                                if childCount > 0 {
-                                    Text("\(childCount) \(Language.FolderDetail.subFolderCount)")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                }
-                            }
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(.tertiary)
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 12)
+                        SubFolderView(folder: sub)
                     }
-                    if index < subFolders.count - 1 {
-                        Divider().padding(.leading, 60)
-                    }
+                    .buttonStyle(.plain)
                 }
             }
             .background(Color.gray.opacity(0.08), in: RoundedRectangle(cornerRadius: cornerRadius))
@@ -183,13 +151,6 @@ struct FolderDetailView: View {
             FolderDetailView(folder: subFolder, repository: repository)
         }
     }
-
-    // MARK: - Devices
-
-    private let deviceColumns = Array(
-        repeating: GridItem(.flexible(), spacing: 16),
-        count: 2
-    )
 
     private var devicesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -215,12 +176,18 @@ struct FolderDetailView: View {
                 .padding(.vertical, 24)
                 .background(Color.gray.opacity(0.08), in: RoundedRectangle(cornerRadius: cornerRadius))
             } else {
-                LazyVGrid(columns: deviceColumns, spacing: itemSpacing) {
+                LazyVGrid(columns: gridColumns, spacing: itemSpacing) {
                     ForEach(devices) { device in
-                        DeviceView(device: device)
+                        NavigationLink(value: device) {
+                            DeviceView(device: device)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
             }
+        }
+        .navigationDestination(for: ConnectedDevice.self) { device in
+            DeviceDetailView(device: device, repository: repository)
         }
     }
 

@@ -40,8 +40,17 @@ struct HomeView: View {
                     preselectedConnectionType: destination.connectionType
                 )
             }
+            .navigationDestination(for: DeviceFolder.self) { folder in
+                FolderDetailView(folder: folder)
+            }
+            .navigationDestination(for: ConnectedDevice.self) { device in
+                DeviceDetailView(device: device)
+            }
         }
         .task { await viewModel.onAppear() }
+        .refreshable {
+            Task { await viewModel.refresh() }
+        }
     }
 
     // MARK: - Sub-views
@@ -81,10 +90,11 @@ struct HomeView: View {
 
                     ForEach(viewModel.folders) { folder in
                         let devices = viewModel.devices(for: folder)
-                        if devices.isEmpty {
+                        let subs = viewModel.subFolders(for: folder)
+                        if devices.isEmpty && subs.isEmpty {
                             emptyFolderSection(folder: folder)
                         } else {
-                            deviceSection(title: folder.name, devices: devices, folderID: folder.id)
+                            folderSection(folder: folder, subFolders: subs, devices: devices)
                         }
                     }
 
@@ -201,17 +211,54 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Device section
+    // MARK: - Sections
+
+    private var gridColumns: [GridItem] {
+        Array(repeating: GridItem(.flexible(), spacing: itemSpacing), count: Int(itemsPerRow))
+    }
+
+    private func folderSection(folder: DeviceFolder, subFolders: [DeviceFolder], devices: [ConnectedDevice]) -> some View {
+        Section {
+            LazyVGrid(columns: gridColumns, spacing: itemSpacing) {
+                ForEach(subFolders) { sub in
+                    NavigationLink(value: sub) {
+                        SubFolderView(folder: sub)
+                    }
+                    .buttonStyle(.plain)
+                }
+                ForEach(devices) { device in
+                    NavigationLink(value: device) {
+                        DeviceView(device: device)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(16)
+            .background(Color.brown.opacity(0.1).cornerRadius(cornerRadius))
+        } header: {
+            HStack {
+                Text(folder.name)
+                    .font(.title)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.primary)
+                Spacer()
+                NavigationLink(value: ConnectDestination(folderID: folder.id)) {
+                    Image(systemName: "plus").font(.title)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 5)
+        }
+    }
 
     private func deviceSection(title: String, devices: [ConnectedDevice], folderID: UUID?) -> some View {
-        let columns: [GridItem] = Array(
-            repeating: GridItem(.flexible(), spacing: itemSpacing),
-            count: Int(itemsPerRow)
-        )
-        return Section {
-            LazyVGrid(columns: columns, spacing: itemSpacing) {
+        Section {
+            LazyVGrid(columns: gridColumns, spacing: itemSpacing) {
                 ForEach(devices) { device in
-                    DeviceView(device: device)
+                    NavigationLink(value: device) {
+                        DeviceView(device: device)
+                    }
+                    .buttonStyle(.plain)
                 }
             }
             .padding(16)

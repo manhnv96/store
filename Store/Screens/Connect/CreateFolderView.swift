@@ -9,10 +9,9 @@ struct CreateFolderView: View {
 
     @State private var folderName: String = ""
     @State private var selectedIconName: String = "folder"
-    @State private var selectedParent: DeviceFolder?
+    @State var selectedParent: DeviceFolder?
     @State private var isSaving = false
     @State private var createdFolder: DeviceFolder?
-    @State private var showToast = false
     @State private var navigateToDetail = false
 
     @FocusState private var nameFieldFocused: Bool
@@ -37,36 +36,13 @@ struct CreateFolderView: View {
         .scrollBounceBehavior(.basedOnSize)
         .scrollDismissesKeyboard(.interactively)
         .onTapGesture { nameFieldFocused = false }
-        .overlay(alignment: .top) {
-            if showToast {
-                toastView
-                    .transition(.move(edge: .top).combined(with: .opacity))
-                    .padding(.top, 8)
-            }
-        }
-        .animation(.easeInOut(duration: 0.3), value: showToast)
         .navigationDestination(isPresented: $navigateToDetail) {
             if let createdFolder {
                 FolderDetailView(folder: createdFolder, repository: repository)
             }
         }
     }
-
-    // MARK: - Toast
-
-    private var toastView: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(.green)
-            Text(Language.FolderDetail.createSuccess)
-                .font(.subheadline.weight(.medium))
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
-        .background(.ultraThinMaterial, in: Capsule())
-        .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
-    }
-
+    
     // MARK: - Parent Folder
 
     private var parentFolderField: some View {
@@ -272,10 +248,6 @@ struct CreateFolderView: View {
             isSaving = false
             createdFolder = folder
             onCreated?()
-
-            showToast = true
-            try? await Task.sleep(for: .seconds(1.2))
-            showToast = false
             navigateToDetail = true
         }
     }

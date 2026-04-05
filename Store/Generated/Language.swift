@@ -106,6 +106,28 @@ internal enum Language {
     /// Tạo thư mục
     internal static let createAction = Language.tr("Localizable", "createFolder.createAction", fallback: "Tạo thư mục")
   }
+  internal enum DeviceDetail {
+    /// Thông tin thiết bị
+    internal static let infoTitle = Language.tr("Localizable", "deviceDetail.infoTitle", fallback: "Thông tin thiết bị")
+    /// Tên thiết bị
+    internal static let nameLabel = Language.tr("Localizable", "deviceDetail.nameLabel", fallback: "Tên thiết bị")
+    /// Tên kết nối
+    internal static let inputNameLabel = Language.tr("Localizable", "deviceDetail.inputNameLabel", fallback: "Tên kết nối")
+    /// Mô tả
+    internal static let descriptionLabel = Language.tr("Localizable", "deviceDetail.descriptionLabel", fallback: "Mô tả")
+    /// Danh mục
+    internal static let categoryLabel = Language.tr("Localizable", "deviceDetail.categoryLabel", fallback: "Danh mục")
+    /// Thư mục
+    internal static let folderLabel = Language.tr("Localizable", "deviceDetail.folderLabel", fallback: "Thư mục")
+    /// Kết nối
+    internal static let connectionTitle = Language.tr("Localizable", "deviceDetail.connectionTitle", fallback: "Kết nối")
+    /// Loại kết nối
+    internal static let connectionTypeLabel = Language.tr("Localizable", "deviceDetail.connectionTypeLabel", fallback: "Loại kết nối")
+    /// Ngày kết nối
+    internal static let connectedDateLabel = Language.tr("Localizable", "deviceDetail.connectedDateLabel", fallback: "Ngày kết nối")
+    /// Cập nhật lần cuối
+    internal static let lastUpdateLabel = Language.tr("Localizable", "deviceDetail.lastUpdateLabel", fallback: "Cập nhật lần cuối")
+  }
   internal enum Device {
     /// Nhập tên gợi nhớ
     internal static let namePlaceholder = Language.tr("Localizable", "device.namePlaceholder", fallback: "Nhập tên gợi nhớ")
