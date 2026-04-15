@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum ComponentButtonState {
+enum ComponentButtonState: Equatable {
     case normal, disabled, performing
 }
 
@@ -134,6 +134,7 @@ struct ComponentButton: View {
             .opacity(currentState.interactable ? 1 : 0.8)
         }
         .disabled(!currentState.interactable)
+        .animation(.easeInOut(duration: 0.25), value: currentState)
     }
 }
 

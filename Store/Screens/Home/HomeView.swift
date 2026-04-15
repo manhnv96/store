@@ -13,10 +13,18 @@ struct ConnectDestination: Hashable {
     var connectionType: ConnectionType?
 }
 
+struct DeviceCreationResult: Hashable {
+    let deviceName: String
+    let connectionType: ConnectionType
+}
+
 struct HomeView: View {
     @Namespace private var nameSpace
 
     @State var viewModel: HomeViewModel
+    @State private var path = NavigationPath()
+    @State private var isTabBarHidden = false
+    @State private var hasAppeared = false
 
     private let itemsPerRow: CGFloat = 2
     private let cornerRadius: CGFloat = 8
@@ -25,9 +33,15 @@ struct HomeView: View {
     init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
     }
+    
+    private func triggerRefresh() {
+        Task {
+            await viewModel.refresh()
+        }
+    }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             VStack(alignment: .leading, spacing: 0) {
                 titleView
                 contentView
@@ -36,7 +50,8 @@ struct HomeView: View {
                 ConnectView(
                     preselectedFolderID: destination.folderID,
                     preselectedImportType: destination.importType,
-                    preselectedConnectionType: destination.connectionType
+                    preselectedConnectionType: destination.connectionType,
+                    navigationPath: $path
                 )
             }
             .navigationDestination(for: DeviceFolder.self) { folder in
@@ -45,21 +60,47 @@ struct HomeView: View {
             .navigationDestination(for: ConnectedDevice.self) { device in
                 DeviceDetailView(device: device)
             }
+            .navigationDestination(for: DeviceCreationResult.self) { result in
+                ConnectSuccessView(
+                    configuration: DeviceCreationSuccessConfig(
+                        deviceName: result.deviceName,
+                        connectionType: result.connectionType
+                    )
+                )
+            }
         }
-        .task { await viewModel.onAppear() }
-        .refreshable {
-            Task { await viewModel.refresh() }
+        .environment(\.triggerHomeRefresh, triggerRefresh)
+        .toolbar(isTabBarHidden ? .hidden : .visible, for: .tabBar)
+        .onChange(of: path.count) { oldValue, newValue in
+            withAnimation(.smooth(duration: 0.35)) {
+                isTabBarHidden = newValue > 0
+            }
+        }
+        .task {
+            // First time appear
+            if !hasAppeared {
+                await viewModel.onAppear()
+                hasAppeared = true
+            }
         }
     }
 
     // MARK: - Sub-views
 
     private var titleView: some View {
-        Text(Language.Tabbar.home)
-            .font(.system(size: 32, design: .default))
-            .bold()
-            .padding(.all)
-            .padding(.top)
+        HStack(alignment: .center) {
+            Text(Language.Tabbar.home)
+                .font(.system(size: 32, design: .default))
+                .bold()
+            Spacer()
+            NavigationLink(value: ConnectDestination(folderID: nil)) {
+                Image(systemName: "plus")
+                    .font(.title)
+                    .fontWeight(.medium)
+            }
+        }
+        .padding(.all)
+        .padding(.top)
     }
 
     private var contentView: some View {
@@ -107,6 +148,10 @@ struct HomeView: View {
                 }
             }
         }
+        .refreshable {
+            // Pull to refresh
+            await viewModel.refresh()
+        }
     }
 
     // MARK: - Empty states
@@ -130,6 +175,9 @@ struct HomeView: View {
             .background(Color.brown.opacity(0.1).cornerRadius(cornerRadius))
         } header: {
             HStack {
+                Image(systemName: folder.iconName)
+                    .font(.title2)
+                    .foregroundStyle(.blue)
                 Text(folder.name)
                     .font(.title)
                     .fontWeight(.medium)
@@ -234,6 +282,9 @@ struct HomeView: View {
             .background(Color.brown.opacity(0.1).cornerRadius(cornerRadius))
         } header: {
             HStack {
+                Image(systemName: folder.iconName)
+                    .font(.title2)
+                    .foregroundStyle(.blue)
                 Text(folder.name)
                     .font(.title)
                     .fontWeight(.medium)

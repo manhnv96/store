@@ -23,10 +23,10 @@ struct ConnectViaBleView: View {
     @State var selectedPeripheral: CBPeripheral?
     
     @FocusState var editting
-    @State private var navigateToConnected = false
 
     var selectedFolderID: UUID?
     var repository: any DeviceRepository
+    @Binding var navigationPath: NavigationPath
 
     var body: some View {
         VStack(spacing: 0) {
@@ -76,17 +76,13 @@ struct ConnectViaBleView: View {
                 .padding(.top, 12)
             }
         }
-        .navigationDestination(isPresented: $navigateToConnected) {
-            if let selectedPeripheral {
-                ConnectSuccessView(configuration: selectedPeripheral)
-            }
-        }
         .onChange(of: bluetoothManager.connectedPeripherals) { _, connected in
             guard let selected = selectedPeripheral else { return }
             if connected.contains(selected) {
+                let deviceName = titleValue.isEmpty ? (selected.name ?? Language.BleConnected.deviceUnnamed) : titleValue
                 let device = ConnectedDevice(
                     id: UUID(),
-                    deviceName: titleValue.isEmpty ? (selected.name ?? Language.BleConnected.deviceUnnamed) : titleValue,
+                    deviceName: deviceName,
                     inputName: selected.name ?? selected.identifier.uuidString,
                     deviceDescription: "",
                     category: "",
@@ -98,14 +94,17 @@ struct ConnectViaBleView: View {
                 Task {
                     try? await repository.save(device)
                 }
-                navigateToConnected = true
+                var newPath = NavigationPath()
+                newPath.append(DeviceCreationResult(deviceName: deviceName, connectionType: .bluetooth))
+                navigationPath = newPath
             }
         }
     }
 }
 
 #Preview {
-    ConnectViaBleView(repository: CoreDataDeviceRepository())
+    @Previewable @State var path = NavigationPath()
+    ConnectViaBleView(repository: CoreDataDeviceRepository(), navigationPath: $path)
 }
 
 

@@ -11,18 +11,24 @@ struct CreateFolderView: View {
     @State private var selectedIconName: String = "folder"
     @State var selectedParent: DeviceFolder?
     @State private var isSaving = false
-    @State private var createdFolder: DeviceFolder?
-    @State private var navigateToDetail = false
+    @State private var isDropdownExpanded = false
+    @State private var expandedFolderIDs: Set<UUID> = []
+    @State private var dropdownHeight: CGFloat = 0
+    @State private var triggerFrame: CGRect = .zero
 
     @FocusState private var nameFieldFocused: Bool
+    @Environment(\.triggerHomeRefresh) private var triggerHomeRefresh
 
     let folders: [DeviceFolder]
     var repository: any DeviceRepository
+    @Binding var navigationPath: NavigationPath
     var onCreated: (() -> Void)?
 
     private var canCreate: Bool {
         !folderName.trimmingCharacters(in: .whitespaces).isEmpty
     }
+
+    private let coordinateSpace = NamedCoordinateSpace.named("createFolder")
 
     var body: some View {
         VStack(spacing: 0) {
@@ -35,16 +41,29 @@ struct CreateFolderView: View {
             }
             .scrollBounceBehavior(.basedOnSize)
             .scrollDismissesKeyboard(.interactively)
-            .onTapGesture { nameFieldFocused = false }
+            .onTapGesture {
+                nameFieldFocused = false
+                if isDropdownExpanded { isDropdownExpanded = false }
+            }
 
             createButton
                 .padding(.top, 12)
         }
-        .navigationDestination(isPresented: $navigateToDetail) {
-            if let createdFolder {
-                FolderDetailView(folder: createdFolder, repository: repository)
+        .coordinateSpace(coordinateSpace)
+        .overlay(alignment: .topLeading) {
+            if isDropdownExpanded {
+                parentDropdownList
+                    .onGeometryChange(for: CGFloat.self) { proxy in
+                        proxy.size.height
+                    } action: { newValue in
+                        dropdownHeight = newValue
+                    }
+                    .frame(width: triggerFrame.width)
+                    .offset(x: triggerFrame.minX, y: triggerFrame.maxY + 4)
+                    .transition(.opacity)
             }
         }
+        .animation(.easeInOut(duration: 0.25), value: isDropdownExpanded)
     }
     
     // MARK: - Parent Folder
@@ -81,31 +100,17 @@ struct CreateFolderView: View {
     }
 
     private var activeParentField: some View {
-        Menu {
-            Button {
-                selectedParent = nil
-            } label: {
-                HStack {
-                    Text(Language.CreateFolder.parentFolderNone)
-                    if selectedParent == nil {
-                        Image(systemName: "checkmark")
-                    }
-                }
+        parentTriggerButton
+            .onGeometryChange(for: CGRect.self) { proxy in
+                proxy.frame(in: coordinateSpace)
+            } action: { newValue in
+                triggerFrame = newValue
             }
+    }
 
-            ForEach(flattenedFolderTree) { node in
-                Button {
-                    selectedParent = node.folder
-                } label: {
-                    HStack {
-                        Image(systemName: node.folder.iconName)
-                        Text(node.indentedName)
-                        if selectedParent?.id == node.folder.id {
-                            Image(systemName: "checkmark")
-                        }
-                    }
-                }
-            }
+    private var parentTriggerButton: some View {
+        Button {
+            isDropdownExpanded.toggle()
         } label: {
             HStack {
                 if let parent = selectedParent {
@@ -120,44 +125,119 @@ struct CreateFolderView: View {
                         .foregroundStyle(Color.gray)
                 }
                 Spacer()
-                Image(systemName: "chevron.up.chevron.down")
+                Image(systemName: isDropdownExpanded ? "chevron.up" : "chevron.down")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
-            .background {
-                Color.gray.opacity(0.1).cornerRadius(8)
+            .background(Color.gray.opacity(0.1), in: RoundedRectangle(cornerRadius: 8))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var parentDropdownList: some View {
+        VStack(spacing: 0) {
+            // "None" option
+            Button {
+                selectedParent = nil
+                isDropdownExpanded = false
+            } label: {
+                HStack {
+                    Image(systemName: "xmark.circle")
+                        .foregroundStyle(.secondary)
+                    Text(Language.CreateFolder.parentFolderNone)
+                        .font(.body)
+                    Spacer()
+                    if selectedParent == nil {
+                        Image(systemName: "checkmark")
+                            .font(.caption).fontWeight(.semibold)
+                            .foregroundStyle(.blue)
+                    }
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+            }
+            .buttonStyle(.plain)
+
+            ForEach(rootFolders) { folder in
+                parentFolderRow(folder, depth: 0)
             }
         }
+        .padding(.vertical, 4)
+        .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 8))
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0.2), lineWidth: 1))
+        .shadow(color: .black.opacity(0.08), radius: 4, y: 2)
+        .padding(.top, 4)
     }
 
     // MARK: - Folder Tree Helpers
 
-    private struct FolderNode: Identifiable {
-        let folder: DeviceFolder
-        let depth: Int
-        var id: UUID { folder.id }
-        var indentedName: String {
-            String(repeating: "    ", count: depth) + folder.name
-        }
+    private var rootFolders: [DeviceFolder] {
+        folders.filter { $0.parentFolderID == nil }
     }
 
-    private var flattenedFolderTree: [FolderNode] {
-        var result = [FolderNode]()
-        let roots = folders.filter { $0.parentFolderID == nil }
-        for root in roots {
-            appendChildren(of: root, depth: 0, into: &result)
-        }
-        return result
+    private func childFolders(of folder: DeviceFolder) -> [DeviceFolder] {
+        folders.filter { $0.parentFolderID == folder.id }
     }
 
-    private func appendChildren(of folder: DeviceFolder, depth: Int, into result: inout [FolderNode]) {
-        result.append(FolderNode(folder: folder, depth: depth))
-        let children = folders.filter { $0.parentFolderID == folder.id }
-        for child in children {
-            appendChildren(of: child, depth: depth + 1, into: &result)
-        }
+    private func parentFolderRow(_ folder: DeviceFolder, depth: Int) -> AnyView {
+        let children = childFolders(of: folder)
+        let hasChildren = !children.isEmpty
+        let isFolderExpanded = expandedFolderIDs.contains(folder.id)
+
+        return AnyView(VStack(spacing: 0) {
+            Button {
+                selectedParent = folder
+                isDropdownExpanded = false
+            } label: {
+                HStack {
+                    if hasChildren {
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                if isFolderExpanded {
+                                    expandedFolderIDs.remove(folder.id)
+                                } else {
+                                    expandedFolderIDs.insert(folder.id)
+                                }
+                            }
+                        } label: {
+                            Image(systemName: isFolderExpanded ? "chevron.down" : "chevron.right")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                                .frame(width: 16, height: 16)
+                        }
+                        .buttonStyle(.plain)
+                    } else {
+                        Spacer().frame(width: 16)
+                    }
+
+                    Image(systemName: folder.iconName)
+                        .foregroundStyle(.blue)
+
+                    Text(folder.name)
+                        .font(.body)
+
+                    Spacer()
+
+                    if selectedParent?.id == folder.id {
+                        Image(systemName: "checkmark")
+                            .font(.caption).fontWeight(.semibold)
+                            .foregroundStyle(.blue)
+                    }
+                }
+                .padding(.leading, CGFloat(depth) * 16 + 12)
+                .padding(.trailing, 12)
+                .padding(.vertical, 8)
+            }
+            .buttonStyle(.plain)
+
+            if hasChildren && isFolderExpanded {
+                ForEach(children) { child in
+                    parentFolderRow(child, depth: depth + 1)
+                }
+            }
+        })
     }
 
     // MARK: - Name
@@ -250,18 +330,23 @@ struct CreateFolderView: View {
         Task {
             try? await repository.save(folder)
             isSaving = false
-            createdFolder = folder
             onCreated?()
-            navigateToDetail = true
+            // Safely call refresh if available (won't crash if not in HomeView context)
+            triggerHomeRefresh()
+            var newPath = NavigationPath()
+            newPath.append(folder)
+            navigationPath = newPath
         }
     }
 }
 
 #Preview {
-    NavigationStack {
+    @Previewable @State var path = NavigationPath()
+    NavigationStack(path: $path) {
         CreateFolderView(
             folders: DeviceFolder.mocks,
-            repository: CoreDataDeviceRepository()
+            repository: CoreDataDeviceRepository(),
+            navigationPath: $path
         )
         .padding(.horizontal, 16)
     }

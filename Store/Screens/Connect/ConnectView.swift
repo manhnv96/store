@@ -23,17 +23,20 @@ struct ConnectView: View {
     @State private var folders: [DeviceFolder] = []
     @State private var selectedFolder: DeviceFolder?
     private let repository: any DeviceRepository
+    @Binding var navigationPath: NavigationPath
 
     init(
         preselectedFolderID: UUID? = nil,
         preselectedImportType: ImportType? = nil,
         preselectedConnectionType: ConnectionType? = nil,
-        repository: any DeviceRepository = CoreDataDeviceRepository()
+        repository: any DeviceRepository = CoreDataDeviceRepository(),
+        navigationPath: Binding<NavigationPath>
     ) {
         self.preselectedFolderID = preselectedFolderID
         self._selectedImportType = State(initialValue: preselectedImportType ?? ImportType.allCases.first)
         self._selectedConnection = State(initialValue: preselectedConnectionType)
         self.repository = repository
+        self._navigationPath = navigationPath
     }
     
     var body: some View {
@@ -50,7 +53,6 @@ struct ConnectView: View {
         }
         .padding(.horizontal, 16)
         .padding(.bottom, 16)
-        .toolbar(.hidden, for: .tabBar)
         .toolbar {
             ToolbarItem(placement: .title) {
                 Text(title).font(.title3).fontWeight(.medium)
@@ -75,12 +77,14 @@ struct ConnectView: View {
             case .bluetooth:
                 ConnectViaBleView(
                     selectedFolderID: selectedFolder?.id,
-                    repository: repository
+                    repository: repository,
+                    navigationPath: $navigationPath
                 )
             case .wifi:
                 ConnectViaWifiView(
                     selectedFolderID: selectedFolder?.id,
-                    repository: repository
+                    repository: repository,
+                    navigationPath: $navigationPath
                 )
             case .none:
                 Spacer()
@@ -112,6 +116,7 @@ struct ConnectView: View {
             selectedParent: selectedFolder,
             folders: folders,
             repository: repository,
+            navigationPath: $navigationPath,
             onCreated: {
                 Task {
                     let repo = repository
@@ -160,5 +165,8 @@ enum ConnectionType: String, CaseIterable, Codable, Hashable {
 }
 
 #Preview {
-    ConnectView()
+    @Previewable @State var path = NavigationPath()
+    NavigationStack(path: $path) {
+        ConnectView(navigationPath: $path)
+    }
 }

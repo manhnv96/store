@@ -12,12 +12,12 @@ struct ConnectViaWifiView: View {
     @State private var deviceName: String = ""
     @State private var ipAddress: String = ""
     @State private var isSaving = false
-    @State private var navigateToConnected = false
 
     @FocusState private var focusedField: Field?
 
     var selectedFolderID: UUID?
     var repository: any DeviceRepository
+    @Binding var navigationPath: NavigationPath
 
     private enum Field: Hashable {
         case ipAddress, deviceName
@@ -60,11 +60,6 @@ struct ConnectViaWifiView: View {
             .state(buttonState)
             .padding(.top, 12)
         }
-        .navigationDestination(isPresented: $navigateToConnected) {
-            ConnectSuccessView(
-                configuration: WifiConnectSuccessConfiguration(deviceName: savedDeviceName)
-            )
-        }
     }
 
     // MARK: - Helpers
@@ -106,7 +101,9 @@ struct ConnectViaWifiView: View {
         Task {
             try? await repository.save(device)
             isSaving = false
-            navigateToConnected = true
+            var newPath = NavigationPath()
+            newPath.append(DeviceCreationResult(deviceName: name, connectionType: .wifi))
+            navigationPath = newPath
         }
     }
 }
@@ -126,7 +123,8 @@ struct WifiConnectSuccessConfiguration: ConnectSuccessConfiguration {
 }
 
 #Preview {
-    NavigationStack {
-        ConnectViaWifiView(repository: CoreDataDeviceRepository())
+    @Previewable @State var path = NavigationPath()
+    NavigationStack(path: $path) {
+        ConnectViaWifiView(repository: CoreDataDeviceRepository(), navigationPath: $path)
     }
 }

@@ -12,6 +12,7 @@ import IQKeyboardManagerSwift
 struct StoreApp: App {
 
     private let persistenceController = PersistenceController.shared
+    @AppStorage("isLoggedIn") private var isLoggedIn = false
 
     init() {
         IQKeyboardManager.shared.isEnabled = true
@@ -20,8 +21,18 @@ struct StoreApp: App {
 
     var body: some Scene {
         WindowGroup {
-            DashboardView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            if isLoggedIn {
+                DashboardView()
+                    .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            } else {
+                LoginView(viewModel: makeLoginViewModel())
+            }
         }
+    }
+
+    private func makeLoginViewModel() -> LoginViewModel {
+        let vm = LoginViewModel()
+        vm.onLoginSuccess = { isLoggedIn = true }
+        return vm
     }
 }

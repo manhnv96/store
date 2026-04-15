@@ -46,6 +46,15 @@ extension DeviceFolder {
                 updatedDate: Date(),
                 lastOpenDate: nil,
                 parentFolderID: livingRoom
+            ),
+            DeviceFolder(
+                id: UUID(),
+                name: "Speakers",
+                iconName: "hifispeaker",
+                createdDate: Date(),
+                updatedDate: Date(),
+                lastOpenDate: nil,
+                parentFolderID: livingRoom
             )
         ]
     }()

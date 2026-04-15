@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /Users/manhnv/Documents/Store -name \"*.swift\" -exec wc -l {} +)"
+    ]
+  }
+}

@@ -24,7 +24,9 @@ extension ConnectSuccessConfiguration {
 /// Displays the list of currently connected BLE peripherals
 /// and lets the user disconnect any of them.
 struct ConnectSuccessView: View {
-     var configuration: any ConnectSuccessConfiguration
+    var configuration: any ConnectSuccessConfiguration
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.triggerHomeRefresh) private var triggerHomeRefresh
 
     var body: some View {
         VStack(alignment: .center, spacing: 16) {
@@ -62,10 +64,16 @@ struct ConnectSuccessView: View {
     
     private var actionView: some View {
         VStack(alignment: .center, spacing: 16) {
-            ComponentButton(title: "Xem thiết bị", action: {})
+            ComponentButton(title: "Xem thiết bị", action: {
+                triggerHomeRefresh()
+                dismiss()
+            })
                 .style(.primary)
                 .fillWidth()
-            ComponentButton(title: "Để sau", action: {})
+            ComponentButton(title: "Để sau", action: {
+                triggerHomeRefresh()
+                dismiss()
+            })
                 .style(.secondary)
                 .fillWidth()
         }
@@ -84,4 +92,22 @@ struct ConnectSuccessView: View {
 fileprivate struct ConnectSuccessPreview: ConnectSuccessConfiguration {
     let title: String
     let description: String
+}
+
+struct DeviceCreationSuccessConfig: ConnectSuccessConfiguration {
+    let deviceName: String
+    let connectionType: ConnectionType
+
+    var title: String {
+        "Kết nối thiết bị \"\(deviceName)\" thành công"
+    }
+
+    var description: String {
+        switch connectionType {
+        case .bluetooth:
+            "Giờ bạn hãy reset thiết bị và thử lại để kiểm tra kết nối."
+        case .wifi:
+            "Giờ bạn hãy kiểm tra kết nối WiFi với thiết bị."
+        }
+    }
 }
