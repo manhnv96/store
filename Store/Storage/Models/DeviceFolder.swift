@@ -9,12 +9,12 @@ import Foundation
 
 struct DeviceFolder: Identifiable, Hashable {
     let id: UUID
+    var parentFolderID: UUID?
     var name: String
     var iconName: String
     var createdDate: Date
-    var updatedDate: Date
+    var updatedDate: Date?
     var lastOpenDate: Date?
-    var parentFolderID: UUID?
 }
 
 #if DEBUG
@@ -40,21 +40,21 @@ extension DeviceFolder {
             ),
             DeviceFolder(
                 id: UUID(),
+                parentFolderID: livingRoom,
                 name: "Lights",
                 iconName: "lightbulb",
                 createdDate: Date(),
                 updatedDate: Date(),
-                lastOpenDate: nil,
-                parentFolderID: livingRoom
+                lastOpenDate: nil
             ),
             DeviceFolder(
                 id: UUID(),
+                parentFolderID: livingRoom,
                 name: "Speakers",
                 iconName: "hifispeaker",
                 createdDate: Date(),
                 updatedDate: Date(),
-                lastOpenDate: nil,
-                parentFolderID: livingRoom
+                lastOpenDate: nil
             )
         ]
     }()

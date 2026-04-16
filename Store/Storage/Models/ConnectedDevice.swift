@@ -8,7 +8,7 @@
 import Foundation
 
 struct ConnectedDevice: Identifiable, Hashable {
-    let id: UUID
+    var id: UUID
     var deviceName: String
     var inputName: String
     var deviceDescription: String

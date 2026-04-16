@@ -320,11 +320,11 @@ struct CreateFolderView: View {
         guard canCreate else { return }
         let folder = DeviceFolder(
             id: UUID(),
+            parentFolderID: selectedParent?.id,
             name: folderName.trimmingCharacters(in: .whitespaces),
             iconName: selectedIconName,
             createdDate: .now,
-            updatedDate: .now,
-            parentFolderID: selectedParent?.id
+            updatedDate: .now
         )
         isSaving = true
         Task {

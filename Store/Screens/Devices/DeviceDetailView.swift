@@ -14,8 +14,12 @@ struct DeviceDetailView: View {
     @State private var showingDeleteAlert = false
     @State private var showingMoveSheet = false
     @State private var showingEditSheet = false
+    @State private var showingShareSheet = false
+    @State private var showingDuplicateSheet = false
+    @State private var isFavorite = false
     
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.triggerHomeRefresh) private var triggerHomeRefresh
 
     private let repository: any DeviceRepository
     private let cornerRadius: CGFloat = 8
@@ -45,29 +49,68 @@ struct DeviceDetailView: View {
             
             ToolbarItem(placement: .navigationBarTrailing) {
                 Menu {
-                    Button {
-                        showingMoveSheet = true
-                    } label: {
-                        Label("Move Device", systemImage: "folder.badge.gearshape")
+                    // Quick Actions Section
+                    Section {
+                        Button {
+                            isFavorite.toggle()
+                        } label: {
+                            Label(
+                                isFavorite ? "Remove from Favorites" : "Add to Favorites",
+                                systemImage: isFavorite ? "star.fill" : "star"
+                            )
+                        }
+                        
+                        Button {
+                            showingDuplicateSheet = true
+                        } label: {
+                            Label("Duplicate Device", systemImage: "plus.square.on.square")
+                        }
                     }
                     
-                    Button {
-                        showingEditSheet = true
-                    } label: {
-                        Label("Edit", systemImage: "pencil")
+                    // Organization Section
+                    Section {
+                        Button {
+                            showingMoveSheet = true
+                        } label: {
+                            Label("Move to Folder", systemImage: "folder.badge.gearshape")
+                        }
+                        
+                        Button {
+                            showingEditSheet = true
+                        } label: {
+                            Label("Edit Details", systemImage: "pencil")
+                        }
                     }
                     
-                    Divider()
+                    // Sharing Section
+                    Section {
+                        Button {
+                            showingShareSheet = true
+                        } label: {
+                            Label("Share Device Info", systemImage: "square.and.arrow.up")
+                        }
+                        
+                        Button {
+                            exportDeviceConfiguration()
+                        } label: {
+                            Label("Export Configuration", systemImage: "arrow.down.doc")
+                        }
+                    }
                     
-                    Button(role: .destructive) {
-                        showingDeleteAlert = true
-                    } label: {
-                        Label("Delete", systemImage: "trash")
+                    // Danger Zone
+                    Section {
+                        Button(role: .destructive) {
+                            showingDeleteAlert = true
+                        } label: {
+                            Label("Delete Device", systemImage: "trash")
+                        }
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")
                         .font(.title2)
+                        .symbolRenderingMode(.hierarchical)
                 }
+                .menuOrder(.fixed)
             }
         }
         .alert("Delete Device", isPresented: $showingDeleteAlert) {
@@ -85,6 +128,12 @@ struct DeviceDetailView: View {
         .sheet(isPresented: $showingEditSheet) {
             EditDeviceView(device: device, repository: repository)
         }
+        .sheet(isPresented: $showingShareSheet) {
+            ShareDeviceView(device: device)
+        }
+        .sheet(isPresented: $showingDuplicateSheet) {
+            DuplicateDeviceView(device: device, repository: repository)
+        }
         .task { await loadData() }
     }
 
@@ -93,12 +142,52 @@ struct DeviceDetailView: View {
     private var contentView: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
+                dashboardBanner
                 infoSection
                 connectionSection
             }
             .padding(16)
         }
         .scrollBounceBehavior(.basedOnSize)
+        .navigationDestination(for: String.self) { destination in
+            if destination == "waterDashboard" {
+                WaterDashboardView(
+                    viewModel: WaterDashboardViewModel(device: device)
+                )
+            }
+        }
+    }
+
+    // MARK: - Dashboard Banner
+
+    private var dashboardBanner: some View {
+        NavigationLink(value: "waterDashboard") {
+            HStack(spacing: 14) {
+                Image(systemName: "chart.line.uptrend.xyaxis")
+                    .font(.title2)
+                    .foregroundStyle(.white)
+                    .frame(width: 44, height: 44)
+                    .background(.blue.gradient, in: RoundedRectangle(cornerRadius: 10))
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Water Dashboard")
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                    Text("View parameters & charts")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(14)
+            .background(Color.gray.opacity(0.08), in: RoundedRectangle(cornerRadius: cornerRadius))
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Info
@@ -222,11 +311,32 @@ struct DeviceDetailView: View {
             do {
                 try await repository.delete(deviceID: device.id)
                 await MainActor.run {
+                    triggerHomeRefresh()
                     dismiss()
                 }
             } catch {
                 print("Error deleting device: \(error)")
             }
+        }
+    }
+    
+    private func exportDeviceConfiguration() {
+        // Create a JSON representation of the device
+        let deviceInfo: [String: Any] = [
+            "name": device.deviceName,
+            "inputName": device.inputName,
+            "description": device.deviceDescription,
+            "category": device.category,
+            "connectionType": device.connectionType.title,
+            "connectedDate": device.connectedDate.ISO8601Format(),
+            "lastUpdate": device.lastUpdate.ISO8601Format()
+        ]
+        
+        // In a real app, you would save this to a file or share it
+        if let jsonData = try? JSONSerialization.data(withJSONObject: deviceInfo, options: .prettyPrinted),
+           let jsonString = String(data: jsonData, encoding: .utf8) {
+            print("Device Configuration:\n\(jsonString)")
+            // TODO: Present share sheet with the configuration file
         }
     }
 }
@@ -329,6 +439,7 @@ struct EditDeviceView: View {
     let repository: any DeviceRepository
     
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.triggerHomeRefresh) private var triggerHomeRefresh
     @State private var deviceName: String
     @State private var inputName: String
     @State private var deviceDescription: String
@@ -396,10 +507,213 @@ struct EditDeviceView: View {
                 updatedDevice.category = category
                 try await repository.update(updatedDevice)
                 await MainActor.run {
+                    triggerHomeRefresh()
                     dismiss()
                 }
             } catch {
                 print("Error updating device: \(error)")
+            }
+        }
+    }
+}
+
+struct ShareDeviceView: View {
+    let device: ConnectedDevice
+    
+    @Environment(\.dismiss) private var dismiss
+    
+    var shareText: String {
+        """
+        Device: \(device.deviceName)
+        Type: \(device.connectionType.title)
+        Input: \(device.inputName)
+        \(device.deviceDescription.isEmpty ? "" : "Description: \(device.deviceDescription)")
+        Connected: \(device.connectedDate.formatted(date: .abbreviated, time: .shortened))
+        """
+    }
+    
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 24) {
+                Image(systemName: device.connectionType.iconSystemName)
+                    .font(.system(size: 60))
+                    .foregroundStyle(.blue)
+                    .padding()
+                
+                VStack(spacing: 8) {
+                    Text(device.deviceName)
+                        .font(.title2.weight(.semibold))
+                    Text(device.connectionType.title)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Share Options")
+                        .font(.headline)
+                        .padding(.horizontal)
+                    
+                    VStack(spacing: 0) {
+                        ShareOptionButton(
+                            icon: "doc.on.doc",
+                            title: "Copy Details",
+                            action: {
+                                UIPasteboard.general.string = shareText
+                                dismiss()
+                            }
+                        )
+                        
+                        Divider().padding(.leading, 56)
+                        
+                        ShareOptionButton(
+                            icon: "qrcode",
+                            title: "Generate QR Code",
+                            action: {
+                                // TODO: Generate QR code
+                                dismiss()
+                            }
+                        )
+                        
+                        Divider().padding(.leading, 56)
+                        
+                        ShareOptionButton(
+                            icon: "square.and.arrow.up",
+                            title: "Share via System",
+                            action: {
+                                // TODO: Present system share sheet
+                                dismiss()
+                            }
+                        )
+                    }
+                    .background(Color.gray.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
+                    .padding(.horizontal)
+                }
+                
+                Spacer()
+            }
+            .padding(.top, 32)
+            .navigationTitle("Share Device")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
+struct ShareOptionButton: View {
+    let icon: String
+    let title: String
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 16) {
+                Image(systemName: icon)
+                    .font(.title3)
+                    .foregroundStyle(.blue)
+                    .frame(width: 32)
+                Text(title)
+                    .font(.body)
+                    .foregroundStyle(.primary)
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+        }
+    }
+}
+
+struct DuplicateDeviceView: View {
+    let device: ConnectedDevice
+    let repository: any DeviceRepository
+    
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.triggerHomeRefresh) private var triggerHomeRefresh
+    @State private var deviceName: String
+    @State private var includeDescription = true
+    @State private var includeCategory = true
+    
+    init(device: ConnectedDevice, repository: any DeviceRepository) {
+        self.device = device
+        self.repository = repository
+        _deviceName = State(initialValue: "\(device.deviceName) Copy")
+    }
+    
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("New Device Name") {
+                    TextField("Device Name", text: $deviceName)
+                }
+                
+                Section("Copy Settings") {
+                    Toggle("Include Description", isOn: $includeDescription)
+                    Toggle("Include Category", isOn: $includeCategory)
+                }
+                
+                Section("Original Device") {
+                    HStack {
+                        Image(systemName: device.connectionType.iconSystemName)
+                            .foregroundStyle(.blue)
+                        VStack(alignment: .leading) {
+                            Text(device.deviceName)
+                                .font(.body.weight(.medium))
+                            Text(device.connectionType.title)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Duplicate Device")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Duplicate") {
+                        duplicateDevice()
+                    }
+                    .disabled(deviceName.isEmpty)
+                }
+            }
+        }
+    }
+    
+    private func duplicateDevice() {
+        Task {
+            do {
+                var newDevice = device
+                newDevice.id = UUID()
+                newDevice.deviceName = deviceName
+                newDevice.connectedDate = Date()
+                newDevice.lastUpdate = Date()
+                
+                if !includeDescription {
+                    newDevice.deviceDescription = ""
+                }
+                if !includeCategory {
+                    newDevice.category = ""
+                }
+                
+                try await repository.save(newDevice)
+                await MainActor.run {
+                    triggerHomeRefresh()
+                    dismiss()
+                }
+            } catch {
+                print("Error duplicating device: \(error)")
             }
         }
     }
@@ -412,3 +726,4 @@ struct EditDeviceView: View {
     }
 }
 #endif
+

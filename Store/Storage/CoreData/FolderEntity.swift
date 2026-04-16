@@ -29,12 +29,12 @@ extension FolderEntity {
 
         return DeviceFolder(
             id: id,
+            parentFolderID: parentFolderID,
             name: name,
             iconName: iconName ?? "folder",
             createdDate: createdDate,
             updatedDate: updatedDate,
-            lastOpenDate: lastOpenDate,
-            parentFolderID: parentFolderID
+            lastOpenDate: lastOpenDate
         )
     }
 

@@ -116,10 +116,10 @@ struct HomeView: View {
 
     private var folderList: some View {
         ScrollView {
-            if viewModel.isEmpty {
-                globalEmptyView
-            } else {
-                VStack(spacing: itemSpacing) {
+            VStack(spacing: itemSpacing) {
+                if viewModel.isEmpty {
+                    globalEmptyView
+                } else {
                     if !viewModel.recentDevices.isEmpty {
                         deviceSection(
                             title: Language.Home.recentDevices,
@@ -149,7 +149,6 @@ struct HomeView: View {
             }
         }
         .refreshable {
-            // Pull to refresh
             await viewModel.refresh()
         }
     }

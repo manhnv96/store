@@ -21,8 +21,12 @@ struct FolderDetailView: View {
     @State private var showingDeleteAlert = false
     @State private var showingMoveSheet = false
     @State private var showingEditSheet = false
+    @State private var showingShareSheet = false
+    @State private var showingCreateSubFolderSheet = false
+    @State private var isFavorite = false
     
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.triggerHomeRefresh) private var triggerHomeRefresh
 
     private let repository: any DeviceRepository
     private let itemSpacing: CGFloat = 16
@@ -51,29 +55,78 @@ struct FolderDetailView: View {
             
             ToolbarItem(placement: .navigationBarTrailing) {
                 Menu {
-                    Button {
-                        showingMoveSheet = true
-                    } label: {
-                        Label("Move Folder", systemImage: "folder.badge.gearshape")
+                    // Quick Actions Section
+                    Section {
+                        Button {
+                            isFavorite.toggle()
+                        } label: {
+                            Label(
+                                isFavorite ? "Remove from Favorites" : "Add to Favorites",
+                                systemImage: isFavorite ? "star.fill" : "star"
+                            )
+                        }
+                        
+                        Button {
+                            showingCreateSubFolderSheet = true
+                        } label: {
+                            Label("Create Subfolder", systemImage: "folder.badge.plus")
+                        }
                     }
                     
-                    Button {
-                        showingEditSheet = true
-                    } label: {
-                        Label("Edit", systemImage: "pencil")
+                    // Organization Section
+                    Section {
+                        Button {
+                            showingMoveSheet = true
+                        } label: {
+                            Label("Move Folder", systemImage: "folder.badge.gearshape")
+                        }
+                        
+                        Button {
+                            showingEditSheet = true
+                        } label: {
+                            Label("Edit Details", systemImage: "pencil")
+                        }
                     }
                     
-                    Divider()
+                    // Information Section
+                    Section {
+                        Button {
+                            showingShareSheet = true
+                        } label: {
+                            Label("Share Folder Info", systemImage: "square.and.arrow.up")
+                        }
+                        
+                        Menu {
+                            Button {
+                                printFolderSummary()
+                            } label: {
+                                Label("Summary", systemImage: "doc.text")
+                            }
+                            
+                            Button {
+                                exportFolderStructure()
+                            } label: {
+                                Label("Structure", systemImage: "list.bullet.rectangle")
+                            }
+                        } label: {
+                            Label("Export", systemImage: "arrow.down.doc")
+                        }
+                    }
                     
-                    Button(role: .destructive) {
-                        showingDeleteAlert = true
-                    } label: {
-                        Label("Delete", systemImage: "trash")
+                    // Danger Zone
+                    Section {
+                        Button(role: .destructive) {
+                            showingDeleteAlert = true
+                        } label: {
+                            Label("Delete Folder", systemImage: "trash")
+                        }
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")
                         .font(.title2)
+                        .symbolRenderingMode(.hierarchical)
                 }
+                .menuOrder(.fixed)
             }
         }
         .alert("Delete Folder", isPresented: $showingDeleteAlert) {
@@ -94,6 +147,12 @@ struct FolderDetailView: View {
         }
         .sheet(isPresented: $showingEditSheet) {
             EditFolderView(folder: folder, repository: repository)
+        }
+        .sheet(isPresented: $showingShareSheet) {
+            ShareFolderView(folder: folder, deviceCount: devices.count, subFolderCount: subFolders.count)
+        }
+        .sheet(isPresented: $showingCreateSubFolderSheet) {
+            CreateSubFolderView(parentFolder: folder, repository: repository)
         }
         .task { await loadData() }
     }
@@ -304,11 +363,34 @@ struct FolderDetailView: View {
                 
                 // Navigate back after deletion
                 await MainActor.run {
+                    triggerHomeRefresh()
                     dismiss()
                 }
             } catch {
                 print("Error deleting folder: \(error)")
             }
+        }
+    }
+    
+    private func printFolderSummary() {
+        print("Folder: \(folder.name)")
+        print("Contains: \(devices.count) devices, \(subFolders.count) subfolders")
+    }
+    
+    private func exportFolderStructure() {
+        let structure: [String: Any] = [
+            "name": folder.name,
+            "icon": folder.iconName,
+            "deviceCount": devices.count,
+            "subFolderCount": subFolders.count,
+            "devices": devices.map { $0.deviceName },
+            "subFolders": subFolders.map { $0.name }
+        ]
+        
+        if let jsonData = try? JSONSerialization.data(withJSONObject: structure, options: .prettyPrinted),
+           let jsonString = String(data: jsonData, encoding: .utf8) {
+            print("Folder Structure:\n\(jsonString)")
+            // TODO: Present share sheet with the structure file
         }
     }
 }
@@ -407,6 +489,7 @@ struct EditFolderView: View {
     let repository: any DeviceRepository
     
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.triggerHomeRefresh) private var triggerHomeRefresh
     @State private var folderName: String
     @State private var selectedIcon: String
     
@@ -478,10 +561,211 @@ struct EditFolderView: View {
                 updatedFolder.iconName = selectedIcon
                 try await repository.update(updatedFolder)
                 await MainActor.run {
+                    triggerHomeRefresh()
                     dismiss()
                 }
             } catch {
                 print("Error updating folder: \(error)")
+            }
+        }
+    }
+}
+
+struct ShareFolderView: View {
+    let folder: DeviceFolder
+    let deviceCount: Int
+    let subFolderCount: Int
+    
+    @Environment(\.dismiss) private var dismiss
+    
+    var shareText: String {
+        """
+        Folder: \(folder.name)
+        Devices: \(deviceCount)
+        Subfolders: \(subFolderCount)
+        Created: \(folder.createdDate.formatted(date: .abbreviated, time: .shortened))
+        """
+    }
+    
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 24) {
+                Image(systemName: folder.iconName)
+                    .font(.system(size: 60))
+                    .foregroundStyle(.blue)
+                    .padding()
+                
+                VStack(spacing: 8) {
+                    Text(folder.name)
+                        .font(.title2.weight(.semibold))
+                    HStack(spacing: 16) {
+                        Label("\(deviceCount)", systemImage: "externaldrive.connected.to.line.below")
+                            .font(.subheadline)
+                        Label("\(subFolderCount)", systemImage: "folder")
+                            .font(.subheadline)
+                    }
+                    .foregroundStyle(.secondary)
+                }
+                
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Share Options")
+                        .font(.headline)
+                        .padding(.horizontal)
+                    
+                    VStack(spacing: 0) {
+                        Button {
+                            UIPasteboard.general.string = shareText
+                            dismiss()
+                        } label: {
+                            HStack(spacing: 16) {
+                                Image(systemName: "doc.on.doc")
+                                    .font(.title3)
+                                    .foregroundStyle(.blue)
+                                    .frame(width: 32)
+                                Text("Copy Folder Info")
+                                    .font(.body)
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(.tertiary)
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 14)
+                        }
+                        
+                        Divider().padding(.leading, 56)
+                        
+                        Button {
+                            // TODO: Generate folder structure as PDF
+                            dismiss()
+                        } label: {
+                            HStack(spacing: 16) {
+                                Image(systemName: "doc.richtext")
+                                    .font(.title3)
+                                    .foregroundStyle(.blue)
+                                    .frame(width: 32)
+                                Text("Export as Document")
+                                    .font(.body)
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(.tertiary)
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 14)
+                        }
+                    }
+                    .background(Color.gray.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
+                    .padding(.horizontal)
+                }
+                
+                Spacer()
+            }
+            .padding(.top, 32)
+            .navigationTitle("Share Folder")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
+struct CreateSubFolderView: View {
+    let parentFolder: DeviceFolder
+    let repository: any DeviceRepository
+    
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.triggerHomeRefresh) private var triggerHomeRefresh
+    @State private var folderName = ""
+    @State private var selectedIcon = "folder"
+    
+    private let commonIcons = [
+        "folder", "folder.fill", "house", "building.2", "lightbulb", "lightbulb.fill",
+        "lamp.desk", "lamp.floor", "tv", "hifispeaker.fill", "computermouse",
+        "keyboard", "camera", "video", "lock", "fan", "thermometer"
+    ]
+    
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Parent Folder") {
+                    HStack {
+                        Image(systemName: parentFolder.iconName)
+                            .foregroundStyle(.blue)
+                        Text(parentFolder.name)
+                            .font(.body.weight(.medium))
+                    }
+                }
+                
+                Section("New Subfolder Name") {
+                    TextField("Subfolder Name", text: $folderName)
+                }
+                
+                Section("Icon") {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 16) {
+                        ForEach(commonIcons, id: \.self) { icon in
+                            Button {
+                                selectedIcon = icon
+                            } label: {
+                                VStack {
+                                    Image(systemName: icon)
+                                        .font(.title2)
+                                        .foregroundStyle(selectedIcon == icon ? .blue : .primary)
+                                        .frame(width: 44, height: 44)
+                                        .background(
+                                            selectedIcon == icon ? Color.blue.opacity(0.1) : Color.clear,
+                                            in: RoundedRectangle(cornerRadius: 8)
+                                        )
+                                }
+                            }
+                        }
+                    }
+                    .padding(.vertical, 8)
+                }
+            }
+            .navigationTitle("Create Subfolder")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Create") {
+                        createSubFolder()
+                    }
+                    .disabled(folderName.isEmpty)
+                }
+            }
+        }
+    }
+    
+    private func createSubFolder() {
+        Task {
+            do {
+                let newFolder = DeviceFolder(
+                    id: UUID(),
+                    parentFolderID: parentFolder.id,
+                    name: folderName,
+                    iconName: selectedIcon,
+                    createdDate: Date(),
+                    updatedDate: Date()
+                )
+                try await repository.save(newFolder)
+                await MainActor.run {
+                    triggerHomeRefresh()
+                    dismiss()
+                }
+            } catch {
+                print("Error creating subfolder: \(error)")
             }
         }
     }
@@ -494,3 +778,4 @@ struct EditFolderView: View {
     }
 }
 #endif
+
