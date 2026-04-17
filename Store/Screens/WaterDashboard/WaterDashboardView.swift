@@ -9,6 +9,7 @@ import Charts
 struct WaterDashboardView: View {
 
     @State var viewModel: WaterDashboardViewModel
+    @State private var showingSetup = false
 
     private let gridColumns = [
         GridItem(.flexible(), spacing: 12),
@@ -29,6 +30,19 @@ struct WaterDashboardView: View {
             ToolbarItem(placement: .title) {
                 Text(viewModel.device.deviceName)
                     .font(.title3.weight(.medium))
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    showingSetup = true
+                } label: {
+                    Image(systemName: "gearshape")
+                        .font(.title3)
+                }
+            }
+        }
+        .sheet(isPresented: $showingSetup) {
+            DosingSetupView(setup: viewModel.dosingSetup) { newSetup in
+                viewModel.dosingSetup = newSetup
             }
         }
         .task {
@@ -133,17 +147,51 @@ struct WaterDashboardView: View {
                         .foregroundStyle(.secondary)
                 }
 
+                let logs = viewModel.pagedLogs
                 LazyVStack(spacing: 0) {
-                    ForEach(Array(selected.readings.reversed().enumerated()), id: \.element.id) { index, reading in
+                    ForEach(Array(logs.enumerated()), id: \.element.id) { index, reading in
                         logRow(reading: reading)
-                        if index < selected.readings.count - 1 {
+                        if index < logs.count - 1 {
                             Divider().padding(.leading, 44)
                         }
                     }
                 }
                 .background(Color.gray.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
+
+                if viewModel.totalLogPages > 1 {
+                    logPaginationControls
+                }
             }
         }
+    }
+
+    private var logPaginationControls: some View {
+        HStack {
+            Button {
+                withAnimation { viewModel.logPage -= 1 }
+            } label: {
+                Image(systemName: "chevron.left")
+                    .font(.subheadline.weight(.semibold))
+            }
+            .disabled(viewModel.logPage == 0)
+
+            Spacer()
+
+            Text("Page \(viewModel.logPage + 1) of \(viewModel.totalLogPages)")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            Spacer()
+
+            Button {
+                withAnimation { viewModel.logPage += 1 }
+            } label: {
+                Image(systemName: "chevron.right")
+                    .font(.subheadline.weight(.semibold))
+            }
+            .disabled(viewModel.logPage >= viewModel.totalLogPages - 1)
+        }
+        .padding(.horizontal, 8)
     }
 
     private func logRow(reading: WaterReading) -> some View {
@@ -207,16 +255,22 @@ struct SingleParameterChartView: View {
     let summary: WaterParameterSummary
     let color: Color
 
+    private var last12hReadings: [WaterReading] {
+        let cutoff = Date().addingTimeInterval(-12 * 3600)
+        return summary.readings.filter { $0.timestamp >= cutoff }
+    }
+
     var body: some View {
+        let readings = last12hReadings
         Chart {
-            idealBand
-            ForEach(summary.readings) { reading in
+            idealBand(readings: readings)
+            ForEach(readings) { reading in
                 lineMark(reading)
             }
-            ForEach(summary.readings) { reading in
+            ForEach(readings) { reading in
                 areaMark(reading)
             }
-            if let last = summary.readings.last {
+            if let last = readings.last {
                 PointMark(
                     x: .value("Time", last.timestamp),
                     y: .value(summary.type.title, last.value)
@@ -229,7 +283,7 @@ struct SingleParameterChartView: View {
             AxisMarks(position: .leading)
         }
         .chartXAxis {
-            AxisMarks(values: .stride(by: .hour, count: 12)) { _ in
+            AxisMarks(values: .stride(by: .hour, count: 2)) { _ in
                 AxisGridLine()
                 AxisValueLabel(format: .dateTime.hour(.defaultDigits(amPM: .abbreviated)))
             }
@@ -262,9 +316,9 @@ struct SingleParameterChartView: View {
     }
 
     @ChartContentBuilder
-    private var idealBand: some ChartContent {
-        if let first = summary.readings.first?.timestamp,
-           let last = summary.readings.last?.timestamp {
+    private func idealBand(readings: [WaterReading]) -> some ChartContent {
+        if let first = readings.first?.timestamp,
+           let last = readings.last?.timestamp {
             RectangleMark(
                 xStart: .value("Start", first),
                 xEnd: .value("End", last),

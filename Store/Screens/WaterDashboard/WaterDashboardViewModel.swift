@@ -11,7 +11,12 @@ final class WaterDashboardViewModel {
 
     private(set) var parameters: [WaterParameterSummary] = []
     private(set) var isLoading = false
-    var selectedParameter: WaterParameterType = .temperature
+    var dosingSetup = DosingSetup()
+    var selectedParameter: WaterParameterType = .temperature {
+        didSet { if oldValue != selectedParameter { logPage = 0 } }
+    }
+    var logPage = 0
+    let logsPerPage = 12
 
     let device: ConnectedDevice
 
@@ -51,5 +56,19 @@ final class WaterDashboardViewModel {
 
     var selectedSummary: WaterParameterSummary? {
         parameters.first { $0.type == selectedParameter }
+    }
+
+    var totalLogPages: Int {
+        guard let count = selectedSummary?.readings.count, count > 0 else { return 0 }
+        return (count + logsPerPage - 1) / logsPerPage
+    }
+
+    var pagedLogs: [WaterReading] {
+        guard let readings = selectedSummary?.readings else { return [] }
+        let reversed = Array(readings.reversed())
+        let start = logPage * logsPerPage
+        let end = min(start + logsPerPage, reversed.count)
+        guard start < reversed.count else { return [] }
+        return Array(reversed[start..<end])
     }
 }

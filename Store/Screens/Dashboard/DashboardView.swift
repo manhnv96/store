@@ -19,12 +19,11 @@ struct DashboardView: View {
     }()
 
     private var cartView: some View = {
-        Spacer()
-        .tag(TabbarItem.cart)
+        ShopView()
     }()
 
     private var personView: some View = {
-        HomeView(viewModel: .init())
+        ProfileView()
     }()
 
     private var settingView: some View = {
