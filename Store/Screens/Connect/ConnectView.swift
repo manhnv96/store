@@ -71,6 +71,12 @@ struct ConnectView: View {
     
     var equipmentView: some View {
         Group {
+            // QR Scan — primary option
+            qrScanButton
+
+            Divider().padding(.vertical, 4)
+
+            // Manual connection — secondary
             FolderPickerField(folders: folders, selectedFolder: $selectedFolder)
             selectConnection
             switch selectedConnection {
@@ -90,6 +96,39 @@ struct ConnectView: View {
                 Spacer()
             }
         }
+    }
+
+    private var qrScanButton: some View {
+        NavigationLink(value: ScanDestination(folderID: selectedFolder?.id)) {
+            HStack(spacing: 14) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.blue.opacity(0.1))
+                        .frame(width: 56, height: 56)
+                    Image(systemName: "qrcode.viewfinder")
+                        .font(.title2)
+                        .foregroundStyle(.blue)
+                }
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Scan QR Code")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.primary)
+                    Text("Quick setup by scanning the device QR")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(14)
+            .background(Color.gray.opacity(0.06), in: RoundedRectangle(cornerRadius: 14))
+        }
+        .buttonStyle(.plain)
     }
     
     var selectConnection: some View {
@@ -127,6 +166,12 @@ struct ConnectView: View {
             }
         )
     }
+}
+
+// MARK: - QR Scan Destination
+
+struct ScanDestination: Hashable {
+    var folderID: UUID?
 }
 
 enum ImportType: String, CaseIterable, SegmentedPickerItem {

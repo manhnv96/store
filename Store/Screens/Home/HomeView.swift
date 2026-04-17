@@ -18,6 +18,11 @@ struct DeviceCreationResult: Hashable {
     let connectionType: ConnectionType
 }
 
+struct ScannedDevicePreview: Hashable {
+    let info: QRDeviceInfo
+    let folderID: UUID?
+}
+
 struct HomeView: View {
     @Namespace private var nameSpace
 
@@ -66,6 +71,19 @@ struct HomeView: View {
                         deviceName: result.deviceName,
                         connectionType: result.connectionType
                     )
+                )
+            }
+            .navigationDestination(for: ScanDestination.self) { dest in
+                QRScannerView { scannedInfo in
+                    path.append(ScannedDevicePreview(info: scannedInfo, folderID: dest.folderID))
+                }
+            }
+            .navigationDestination(for: ScannedDevicePreview.self) { preview in
+                DevicePreviewView(
+                    deviceInfo: preview.info,
+                    folders: viewModel.folders,
+                    repository: CoreDataDeviceRepository(),
+                    navigationPath: $path
                 )
             }
         }
