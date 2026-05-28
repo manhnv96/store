@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 100;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -37,54 +37,48 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		41A145892F6D9A5C00835BA2 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
 			dstPath = "";
-			dstSubfolderSpec = 10;
+			dstSubfolder = Frameworks;
 			files = (
 			);
 			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		419EAD912DAFE82A00C136D3 /* Store.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Store.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		419EAD9E2DAFE82B00C136D3 /* StoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		419EADA82DAFE82B00C136D3 /* StoreUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StoreUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		419EAD912DAFE82A00C136D3 /* LazyReef.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LazyReef.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		419EAD9E2DAFE82B00C136D3 /* LazyReefTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LazyReefTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		419EADA82DAFE82B00C136D3 /* LazyReefUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LazyReefUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		41E12BD22F80A35500BA9E2A /* swiftgen.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = swiftgen.yml; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		4156BAAF2F7553FF00A7B49D /* Exceptions for "Store" folder in "Store" target */ = {
+		4156BAAF2F7553FF00A7B49D /* Exceptions for "LazyReef" folder in "LazyReef" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Info.plist,
-				Store/Generated/Assets.swift,
-				Store/Generated/Language.swift,
-				Store/Localizable.xcstrings,
 				swiftgen.yml,
 			);
-			target = 419EAD902DAFE82A00C136D3 /* Store */;
+			target = 419EAD902DAFE82A00C136D3 /* LazyReef */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		419EAD932DAFE82A00C136D3 /* Store */ = {
+		419EAD932DAFE82A00C136D3 /* LazyReef */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				4156BAAF2F7553FF00A7B49D /* Exceptions for "Store" folder in "Store" target */,
+				4156BAAF2F7553FF00A7B49D /* Exceptions for "LazyReef" folder in "LazyReef" target */,
 			);
-			path = Store;
+			path = LazyReef;
 			sourceTree = "<group>";
 		};
-		419EADA12DAFE82B00C136D3 /* StoreTests */ = {
+		419EADA12DAFE82B00C136D3 /* LazyReefTest */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = StoreTests;
+			path = LazyReefTest;
 			sourceTree = "<group>";
 		};
-		419EADAB2DAFE82B00C136D3 /* StoreUITests */ = {
+		419EADAB2DAFE82B00C136D3 /* LazyReefTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = StoreUITests;
+			path = LazyReefTests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -92,7 +86,6 @@
 /* Begin PBXFrameworksBuildPhase section */
 		419EAD8E2DAFE82A00C136D3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				41A1454C2F6D98DB00835BA2 /* FirebaseCore in Frameworks */,
 				41E12D682F80F31400BA9E2A /* Lottie in Frameworks */,
@@ -102,21 +95,16 @@
 				41387BE82F6D7DAC000369B8 /* SDWebImageSwiftUI in Frameworks */,
 				41D58B7A2F7557EC000E705A /* IQKeyboardManagerSwift in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		419EAD9B2DAFE82B00C136D3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		419EADA52DAFE82B00C136D3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
@@ -124,9 +112,9 @@
 		419EAD882DAFE82A00C136D3 = {
 			isa = PBXGroup;
 			children = (
-				419EAD932DAFE82A00C136D3 /* Store */,
-				419EADA12DAFE82B00C136D3 /* StoreTests */,
-				419EADAB2DAFE82B00C136D3 /* StoreUITests */,
+				419EAD932DAFE82A00C136D3 /* LazyReef */,
+				419EADA12DAFE82B00C136D3 /* LazyReefTest */,
+				419EADAB2DAFE82B00C136D3 /* LazyReefTests */,
 				419EAD922DAFE82A00C136D3 /* Products */,
 				41E12BD22F80A35500BA9E2A /* swiftgen.yml */,
 			);
@@ -135,9 +123,9 @@
 		419EAD922DAFE82A00C136D3 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				419EAD912DAFE82A00C136D3 /* Store.app */,
-				419EAD9E2DAFE82B00C136D3 /* StoreTests.xctest */,
-				419EADA82DAFE82B00C136D3 /* StoreUITests.xctest */,
+				419EAD912DAFE82A00C136D3 /* LazyReef.app */,
+				419EAD9E2DAFE82B00C136D3 /* LazyReefTests.xctest */,
+				419EADA82DAFE82B00C136D3 /* LazyReefUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -145,9 +133,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		419EAD902DAFE82A00C136D3 /* Store */ = {
+		419EAD902DAFE82A00C136D3 /* LazyReef */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 419EADB22DAFE82B00C136D3 /* Build configuration list for PBXNativeTarget "Store" */;
+			buildConfigurationList = 419EADB22DAFE82B00C136D3 /* Build configuration list for PBXNativeTarget "LazyReef" */;
 			buildPhases = (
 				419EAD8D2DAFE82A00C136D3 /* Sources */,
 				419EAD8E2DAFE82A00C136D3 /* Frameworks */,
@@ -156,12 +144,10 @@
 			);
 			buildRules = (
 			);
-			dependencies = (
-			);
 			fileSystemSynchronizedGroups = (
-				419EAD932DAFE82A00C136D3 /* Store */,
+				419EAD932DAFE82A00C136D3 /* LazyReef */,
 			);
-			name = Store;
+			name = LazyReef;
 			packageProductDependencies = (
 				41387BE72F6D7DAC000369B8 /* SDWebImageSwiftUI */,
 				41A1454B2F6D98DB00835BA2 /* FirebaseCore */,
@@ -172,12 +158,12 @@
 				41E12D672F80F31400BA9E2A /* Lottie */,
 			);
 			productName = Store;
-			productReference = 419EAD912DAFE82A00C136D3 /* Store.app */;
+			productReference = 419EAD912DAFE82A00C136D3 /* LazyReef.app */;
 			productType = "com.apple.product-type.application";
 		};
-		419EAD9D2DAFE82B00C136D3 /* StoreTests */ = {
+		419EAD9D2DAFE82B00C136D3 /* LazyReefTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 419EADB52DAFE82B00C136D3 /* Build configuration list for PBXNativeTarget "StoreTests" */;
+			buildConfigurationList = 419EADB52DAFE82B00C136D3 /* Build configuration list for PBXNativeTarget "LazyReefTests" */;
 			buildPhases = (
 				419EAD9A2DAFE82B00C136D3 /* Sources */,
 				419EAD9B2DAFE82B00C136D3 /* Frameworks */,
@@ -189,18 +175,16 @@
 				419EADA02DAFE82B00C136D3 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				419EADA12DAFE82B00C136D3 /* StoreTests */,
+				419EADA12DAFE82B00C136D3 /* LazyReefTest */,
 			);
-			name = StoreTests;
-			packageProductDependencies = (
-			);
+			name = LazyReefTests;
 			productName = StoreTests;
-			productReference = 419EAD9E2DAFE82B00C136D3 /* StoreTests.xctest */;
+			productReference = 419EAD9E2DAFE82B00C136D3 /* LazyReefTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		419EADA72DAFE82B00C136D3 /* StoreUITests */ = {
+		419EADA72DAFE82B00C136D3 /* LazyReefUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 419EADB82DAFE82B00C136D3 /* Build configuration list for PBXNativeTarget "StoreUITests" */;
+			buildConfigurationList = 419EADB82DAFE82B00C136D3 /* Build configuration list for PBXNativeTarget "LazyReefUITests" */;
 			buildPhases = (
 				419EADA42DAFE82B00C136D3 /* Sources */,
 				419EADA52DAFE82B00C136D3 /* Frameworks */,
@@ -212,13 +196,11 @@
 				419EADAA2DAFE82B00C136D3 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				419EADAB2DAFE82B00C136D3 /* StoreUITests */,
+				419EADAB2DAFE82B00C136D3 /* LazyReefTests */,
 			);
-			name = StoreUITests;
-			packageProductDependencies = (
-			);
+			name = LazyReefUITests;
 			productName = StoreUITests;
-			productReference = 419EADA82DAFE82B00C136D3 /* StoreUITests.xctest */;
+			productReference = 419EADA82DAFE82B00C136D3 /* LazyReefUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -244,12 +226,13 @@
 					};
 				};
 			};
-			buildConfigurationList = 419EAD8C2DAFE82A00C136D3 /* Build configuration list for PBXProject "Store" */;
-			developmentRegion = en;
+			buildConfigurationList = 419EAD8C2DAFE82A00C136D3 /* Build configuration list for PBXProject "LazyReef" */;
+			developmentRegion = vi;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
+				vi,
 			);
 			mainGroup = 419EAD882DAFE82A00C136D3;
 			minimizedProjectReferenceProxies = 1;
@@ -261,14 +244,14 @@
 				41D58B782F7557EC000E705A /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
 				41E12D662F80F31400BA9E2A /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
-			preferredProjectObjectVersion = 77;
+			preferredProjectObjectVersion = 100;
 			productRefGroup = 419EAD922DAFE82A00C136D3 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				419EAD902DAFE82A00C136D3 /* Store */,
-				419EAD9D2DAFE82B00C136D3 /* StoreTests */,
-				419EADA72DAFE82B00C136D3 /* StoreUITests */,
+				419EAD902DAFE82A00C136D3 /* LazyReef */,
+				419EAD9D2DAFE82B00C136D3 /* LazyReefTests */,
+				419EADA72DAFE82B00C136D3 /* LazyReefUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -276,67 +259,55 @@
 /* Begin PBXResourcesBuildPhase section */
 		419EAD8F2DAFE82A00C136D3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				41E12BD32F80A35500BA9E2A /* swiftgen.yml in Resources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		419EAD9C2DAFE82B00C136D3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		419EADA62DAFE82B00C136D3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		419EAD8D2DAFE82A00C136D3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		419EAD9A2DAFE82B00C136D3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		419EADA42DAFE82B00C136D3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
 		419EADA02DAFE82B00C136D3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 419EAD902DAFE82A00C136D3 /* Store */;
+			target = 419EAD902DAFE82A00C136D3 /* LazyReef */;
 			targetProxy = 419EAD9F2DAFE82B00C136D3 /* PBXContainerItemProxy */;
 		};
 		419EADAA2DAFE82B00C136D3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 419EAD902DAFE82A00C136D3 /* Store */;
+			target = 419EAD902DAFE82A00C136D3 /* LazyReef */;
 			targetProxy = 419EADA92DAFE82B00C136D3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		419EADB02DAFE82B00C136D3 /* Debug */ = {
+		419EADB02DAFE82B00C136D3 /* Debug configuration for PBXProject "LazyReef" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -389,6 +360,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Ứng dụng sử dụng microphone của bạn để ghi nhận các thông số mà bạn nói.";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -401,7 +373,7 @@
 			};
 			name = Debug;
 		};
-		419EADB12DAFE82B00C136D3 /* Release */ = {
+		419EADB12DAFE82B00C136D3 /* Release configuration for PBXProject "LazyReef" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -448,6 +420,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Ứng dụng sử dụng microphone của bạn để ghi nhận các thông số mà bạn nói.";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -459,7 +432,7 @@
 			};
 			name = Release;
 		};
-		419EADB32DAFE82B00C136D3 /* Debug */ = {
+		419EADB32DAFE82B00C136D3 /* Debug configuration for PBXNativeTarget "LazyReef" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -468,26 +441,30 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 28C4Z9L4S6;
+				DONT_GENERATE_INFOPLIST_FILE = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Store/Info.plist;
+				INFOPLIST_FILE = "";
+				INFOPLIST_KEY_CFBundleDisplayName = "Lazy Reefer";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Ứng dụng cần Bluetooth để kết nối tới các thiết bị Smart iOT của bạn.";
 				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "Ứng dụng cần truy cập Bluetooth để tìm kiếm và kết nối với các thiết bị thông minh, giúp bạn điều khiển hệ thống smart home một cách nhanh chóng.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Camera access is required to scan device QR codes for quick setup.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Ứng dụng sẽ tự động kết nối tới các thiết bị Smart iOT của bạn khi bạn tới điạ điểm gần chúng.";
 				INFOPLIST_KEY_NSMainNibFile = LaunchScreen.storyboard;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Ứng dụng sử dụng microphone của bạn để ghi nhận các thông số mà bạn nói.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleLightContent;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.manhnv96it.Store;
+				PRODUCT_BUNDLE_IDENTIFIER = com.manhnv96it.lazyreef;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -495,11 +472,11 @@
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		419EADB42DAFE82B00C136D3 /* Release */ = {
+		419EADB42DAFE82B00C136D3 /* Release configuration for PBXNativeTarget "LazyReef" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -508,26 +485,30 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 28C4Z9L4S6;
+				DONT_GENERATE_INFOPLIST_FILE = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Store/Info.plist;
+				INFOPLIST_FILE = "";
+				INFOPLIST_KEY_CFBundleDisplayName = "Lazy Reefer";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Ứng dụng cần Bluetooth để kết nối tới các thiết bị Smart iOT của bạn.";
 				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "Ứng dụng cần truy cập Bluetooth để tìm kiếm và kết nối với các thiết bị thông minh, giúp bạn điều khiển hệ thống smart home một cách nhanh chóng.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Camera access is required to scan device QR codes for quick setup.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Ứng dụng sẽ tự động kết nối tới các thiết bị Smart iOT của bạn khi bạn tới điạ điểm gần chúng.";
 				INFOPLIST_KEY_NSMainNibFile = LaunchScreen.storyboard;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Ứng dụng sử dụng microphone của bạn để ghi nhận các thông số mà bạn nói.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleLightContent;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.manhnv96it.Store;
+				PRODUCT_BUNDLE_IDENTIFIER = com.manhnv96it.lazyreef;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -535,11 +516,11 @@
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
-		419EADB62DAFE82B00C136D3 /* Debug */ = {
+		419EADB62DAFE82B00C136D3 /* Debug configuration for PBXNativeTarget "LazyReefTests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -547,18 +528,23 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 28C4Z9L4S6;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Ứng dụng sử dụng microphone của bạn để ghi nhận các thông số mà bạn nói.";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.manhnv96it.StoreTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Store.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Store";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LazyReef.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LazyReef";
 			};
 			name = Debug;
 		};
-		419EADB72DAFE82B00C136D3 /* Release */ = {
+		419EADB72DAFE82B00C136D3 /* Release configuration for PBXNativeTarget "LazyReefTests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -566,88 +552,99 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 28C4Z9L4S6;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Ứng dụng sử dụng microphone của bạn để ghi nhận các thông số mà bạn nói.";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.manhnv96it.StoreTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Store.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Store";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LazyReef.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LazyReef";
 			};
 			name = Release;
 		};
-		419EADB92DAFE82B00C136D3 /* Debug */ = {
+		419EADB92DAFE82B00C136D3 /* Debug configuration for PBXNativeTarget "LazyReefUITests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 28C4Z9L4S6;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Ứng dụng sử dụng microphone của bạn để ghi nhận các thông số mà bạn nói.";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.manhnv96it.StoreUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Store;
+				TEST_TARGET_NAME = LazyReef;
 			};
 			name = Debug;
 		};
-		419EADBA2DAFE82B00C136D3 /* Release */ = {
+		419EADBA2DAFE82B00C136D3 /* Release configuration for PBXNativeTarget "LazyReefUITests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 28C4Z9L4S6;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Ứng dụng sử dụng microphone của bạn để ghi nhận các thông số mà bạn nói.";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.manhnv96it.StoreUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Store;
+				TEST_TARGET_NAME = LazyReef;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		419EAD8C2DAFE82A00C136D3 /* Build configuration list for PBXProject "Store" */ = {
+		419EAD8C2DAFE82A00C136D3 /* Build configuration list for PBXProject "LazyReef" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				419EADB02DAFE82B00C136D3 /* Debug */,
-				419EADB12DAFE82B00C136D3 /* Release */,
+				419EADB02DAFE82B00C136D3 /* Debug configuration for PBXProject "LazyReef" */,
+				419EADB12DAFE82B00C136D3 /* Release configuration for PBXProject "LazyReef" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		419EADB22DAFE82B00C136D3 /* Build configuration list for PBXNativeTarget "Store" */ = {
+		419EADB22DAFE82B00C136D3 /* Build configuration list for PBXNativeTarget "LazyReef" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				419EADB32DAFE82B00C136D3 /* Debug */,
-				419EADB42DAFE82B00C136D3 /* Release */,
+				419EADB32DAFE82B00C136D3 /* Debug configuration for PBXNativeTarget "LazyReef" */,
+				419EADB42DAFE82B00C136D3 /* Release configuration for PBXNativeTarget "LazyReef" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		419EADB52DAFE82B00C136D3 /* Build configuration list for PBXNativeTarget "StoreTests" */ = {
+		419EADB52DAFE82B00C136D3 /* Build configuration list for PBXNativeTarget "LazyReefTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				419EADB62DAFE82B00C136D3 /* Debug */,
-				419EADB72DAFE82B00C136D3 /* Release */,
+				419EADB62DAFE82B00C136D3 /* Debug configuration for PBXNativeTarget "LazyReefTests" */,
+				419EADB72DAFE82B00C136D3 /* Release configuration for PBXNativeTarget "LazyReefTests" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		419EADB82DAFE82B00C136D3 /* Build configuration list for PBXNativeTarget "StoreUITests" */ = {
+		419EADB82DAFE82B00C136D3 /* Build configuration list for PBXNativeTarget "LazyReefUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				419EADB92DAFE82B00C136D3 /* Debug */,
-				419EADBA2DAFE82B00C136D3 /* Release */,
+				419EADB92DAFE82B00C136D3 /* Debug configuration for PBXNativeTarget "LazyReefUITests" */,
+				419EADBA2DAFE82B00C136D3 /* Release configuration for PBXNativeTarget "LazyReefUITests" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
