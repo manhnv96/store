@@ -19,14 +19,15 @@ struct ConnectViaBleView: View {
     
     @State var selectedConnection: String = "BLE"
     
-    @State var bluetoothManager = BluetoothManager()
+    @State var bluetoothManager = BluetoothManager.shared
     @State var selectedPeripheral: CBPeripheral?
     
     @FocusState var editting
 
-    var selectedFolderID: UUID?
+    var selectedAquariumID: UUID?
     var repository: any DeviceRepository
     @Binding var navigationPath: NavigationPath
+    @Environment(\.triggerHomeRefresh) private var triggerHomeRefresh
 
     var body: some View {
         VStack(spacing: 0) {
@@ -83,16 +84,18 @@ struct ConnectViaBleView: View {
                 let device = ConnectedDevice(
                     id: UUID(),
                     deviceName: deviceName,
-                    inputName: selected.name ?? selected.identifier.uuidString,
+                    inputName: selected.identifier.uuidString,
                     deviceDescription: "",
-                    category: "",
+                    category: DeviceKind.other.rawValue,
                     connectionType: .bluetooth,
                     connectedDate: .now,
                     lastUpdate: .now,
-                    parentFolderID: selectedFolderID
+                    parentFolderID: nil,
+                    parentAquariumID: selectedAquariumID
                 )
                 Task {
                     try? await repository.save(device)
+                    triggerHomeRefresh()
                 }
                 var newPath = NavigationPath()
                 newPath.append(DeviceCreationResult(deviceName: deviceName, connectionType: .bluetooth))

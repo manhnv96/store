@@ -11,35 +11,37 @@ import Observation
 
 @Observable
 class BluetoothManager: NSObject {
+    static let shared = BluetoothManager()
+
     private var centralManager: CBCentralManager?
-    
+
     // Discovered devices available for connection
     var discoveredPeripherals = Set<CBPeripheral>()
-    
+
     var connectingPeripherals = Set<CBPeripheral>()
-    
+
     // Multiple active connections stored by their unique identifier
     var connectedPeripherals = Set<CBPeripheral>()
-    
+
     var failedPeripheral: CBPeripheral?
-    
+
     var disconnectedPeripherals: [CBPeripheral] {
         Array(discoveredPeripherals
             .subtracting(connectingPeripherals)
             .subtracting(connectedPeripherals))
     }
-    
+
     var isPoweredOn: Bool = false
-    
+
     var isScanning: Bool {
         centralManager?.isScanning ?? false
     }
-    
+
     override init() {
         super.init()
         centralManager = CBCentralManager(delegate: self, queue: .main)
     }
-    
+
     func startScanning() {
         guard centralManager?.state == .poweredOn else {
             return
@@ -47,20 +49,40 @@ class BluetoothManager: NSObject {
         // Scan for all devices; in production, specify Service UUIDs for efficiency
         centralManager?.scanForPeripherals(withServices: nil, options: nil)
     }
-    
+
     func stopScan() {
         centralManager?.stopScan()
     }
-    
+
     func connect(to peripheral: CBPeripheral) {
         safeInsert(peripheral: peripheral, to: &connectingPeripherals)
         centralManager?.connect(peripheral, options: nil)
     }
-    
+
     func cancelConnection(_ peripheral: CBPeripheral) {
         safeRemove(peripheral: peripheral, from: &connectingPeripherals)
         safeRemove(peripheral: peripheral, from: &connectedPeripherals)
         centralManager?.cancelPeripheralConnection(peripheral)
+    }
+
+    /// Best-effort disconnect of a stored ConnectedDevice. For BLE devices, the device's
+    /// `inputName` is the peripheral identifier UUID string (set in `ConnectViaBleView`).
+    /// Falls back to `retrievePeripherals(withIdentifiers:)` if the peripheral is not in the
+    /// `connectedPeripherals` cache (e.g., after app relaunch). Silently no-ops if not found.
+    func disconnect(connectedDevice device: ConnectedDevice) {
+        guard device.connectionType == .bluetooth else { return }
+        guard let peripheralUUID = UUID(uuidString: device.inputName) else { return }
+
+        if let cached = connectedPeripherals.first(where: { $0.identifier == peripheralUUID }) {
+            cancelConnection(cached)
+            return
+        }
+
+        if let retrieved = centralManager?
+            .retrievePeripherals(withIdentifiers: [peripheralUUID])
+            .first {
+            centralManager?.cancelPeripheralConnection(retrieved)
+        }
     }
 }
 

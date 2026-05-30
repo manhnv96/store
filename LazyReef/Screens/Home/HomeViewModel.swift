@@ -3,25 +3,28 @@ import SwiftUI
 @MainActor
 @Observable
 final class HomeViewModel {
-    
+
     // MARK: - State
     private(set) var recentDevices: [ConnectedDevice] = []
     private(set) var folders: [DeviceFolder] = []
     private(set) var allFolders: [DeviceFolder] = []
-    private(set) var devicesByFolder: [UUID: [ConnectedDevice]] = [:]
+    private(set) var allAquariums: [Aquarium] = []
+    private(set) var rootAquariums: [Aquarium] = []
+    private(set) var aquariumsByFolder: [UUID: [Aquarium]] = [:]
+    private(set) var devicesByAquarium: [UUID: [ConnectedDevice]] = [:]
     private(set) var ungroupedDevices: [ConnectedDevice] = []
     private(set) var isLoading = false
     var errorMessage: String?
-    
+
     // MARK: - Dependencies
     private let repository: any DeviceRepository
-    
+
     init(repository: any DeviceRepository = CoreDataDeviceRepository()) {
         self.repository = repository
     }
-    
+
     // MARK: - Intents
-    
+
     func onAppear() async {
         isLoading = true
         defer { isLoading = false }
@@ -39,32 +42,45 @@ final class HomeViewModel {
 
     private func fetchData() async {
         errorMessage = nil
-        
+
         do {
             let repo = repository
-            
-            let (fetchedFolders, groupedDevices, recent, ungrouped) = try await Task.detached(priority: .userInitiated) {
-                async let fetchFolders = try await repo.fetchAllFolders()
-                async let fetchDevices = try await repo.fetchAllDevices()
-                let (f, d) = try await (fetchFolders, fetchDevices)
-                
-                var grouped = [UUID: [ConnectedDevice]]()
-                var noFolder = [ConnectedDevice]()
-                for device in d {
-                    if let id = device.parentFolderID {
-                        grouped[id, default: []].append(device)
-                    } else {
-                        noFolder.append(device)
+
+            let (fetchedFolders, fetchedAquariums, devicesGroupedByAquarium, aquariumsGroupedByFolder, recent, ungrouped) =
+                try await Task.detached(priority: .userInitiated) {
+                    async let fetchFolders = try await repo.fetchAllFolders()
+                    async let fetchAquariums = try await repo.fetchAllAquariums()
+                    async let fetchDevices = try await repo.fetchAllDevices()
+                    let (f, a, d) = try await (fetchFolders, fetchAquariums, fetchDevices)
+
+                    var devicesByAq = [UUID: [ConnectedDevice]]()
+                    var noAquarium = [ConnectedDevice]()
+                    for device in d {
+                        if let id = device.parentAquariumID {
+                            devicesByAq[id, default: []].append(device)
+                        } else {
+                            noAquarium.append(device)
+                        }
                     }
-                }
-                let sorted = d.sorted { $0.connectedDate > $1.connectedDate }
-                return (f, grouped, sorted, noFolder)
-            }.value
-            
+
+                    var aquariumsByFol = [UUID: [Aquarium]]()
+                    for aquarium in a {
+                        if let id = aquarium.parentFolderID {
+                            aquariumsByFol[id, default: []].append(aquarium)
+                        }
+                    }
+
+                    let sorted = d.sorted { $0.connectedDate > $1.connectedDate }
+                    return (f, a, devicesByAq, aquariumsByFol, sorted, noAquarium)
+                }.value
+
             recentDevices = Array(recent.prefix(2))
             allFolders = fetchedFolders
             folders = fetchedFolders.filter { $0.parentFolderID == nil }
-            devicesByFolder = groupedDevices
+            allAquariums = fetchedAquariums
+            rootAquariums = fetchedAquariums.filter { $0.parentFolderID == nil }
+            aquariumsByFolder = aquariumsGroupedByFolder
+            devicesByAquarium = devicesGroupedByAquarium
 
             let recentIDs = Set(recentDevices.map(\.id))
             ungroupedDevices = ungrouped.filter { !recentIDs.contains($0.id) }
@@ -72,17 +88,24 @@ final class HomeViewModel {
             errorMessage = error.localizedDescription
         }
     }
-    
-    var isEmpty: Bool {
-        recentDevices.isEmpty && folders.isEmpty
-    }
 
-    func devices(for folder: DeviceFolder) -> [ConnectedDevice] {
-        devicesByFolder[folder.id] ?? []
+    var isEmpty: Bool {
+        recentDevices.isEmpty
+            && folders.isEmpty
+            && rootAquariums.isEmpty
+            && ungroupedDevices.isEmpty
     }
 
     func subFolders(for folder: DeviceFolder) -> [DeviceFolder] {
         allFolders.filter { $0.parentFolderID == folder.id }
+    }
+
+    func aquariums(in folder: DeviceFolder) -> [Aquarium] {
+        aquariumsByFolder[folder.id] ?? []
+    }
+
+    func devices(in aquarium: Aquarium) -> [ConnectedDevice] {
+        devicesByAquarium[aquarium.id] ?? []
     }
 }
 
@@ -119,7 +142,8 @@ extension HomeViewModel {
                         connectionType: .bluetooth,
                         connectedDate: .now.addingTimeInterval(-3600),
                         lastUpdate: .now,
-                        parentFolderID: folderID1
+                        parentFolderID: folderID1,
+                        parentAquariumID: nil
                     ),
                     ConnectedDevice(
                         id: UUID(),
@@ -130,7 +154,8 @@ extension HomeViewModel {
                         connectionType: .bluetooth,
                         connectedDate: .now.addingTimeInterval(-7200),
                         lastUpdate: .now,
-                        parentFolderID: folderID1
+                        parentFolderID: folderID1,
+                        parentAquariumID: nil
                     ),
                     ConnectedDevice(
                         id: UUID(),
@@ -141,7 +166,8 @@ extension HomeViewModel {
                         connectionType: .bluetooth,
                         connectedDate: .now.addingTimeInterval(-600),
                         lastUpdate: .now,
-                        parentFolderID: folderID1
+                        parentFolderID: folderID1,
+                        parentAquariumID: nil
                     ),
                     ConnectedDevice(
                         id: UUID(),
@@ -152,7 +178,8 @@ extension HomeViewModel {
                         connectionType: .wifi,
                         connectedDate: .now,
                         lastUpdate: .now,
-                        parentFolderID: folderID2
+                        parentFolderID: folderID2,
+                        parentAquariumID: nil
                     ),
                     ConnectedDevice(
                         id: UUID(),
@@ -163,7 +190,8 @@ extension HomeViewModel {
                         connectionType: .bluetooth,
                         connectedDate: .now.addingTimeInterval(-1800),
                         lastUpdate: .now,
-                        parentFolderID: nil
+                        parentFolderID: nil,
+                        parentAquariumID: nil
                     )
                 ]
             )
@@ -174,15 +202,20 @@ extension HomeViewModel {
 private final class PreviewDeviceRepository: DeviceRepository, @unchecked Sendable {
     private let foldersMock: [DeviceFolder]
     private let devicesMock: [ConnectedDevice]
-    
-    init(folders: [DeviceFolder], devices: [ConnectedDevice]) {
+    private let aquariumsMock: [Aquarium]
+
+    init(folders: [DeviceFolder], devices: [ConnectedDevice], aquariums: [Aquarium] = []) {
         self.foldersMock = folders
         self.devicesMock = devices
+        self.aquariumsMock = aquariums
     }
-    
+
     func fetchAllDevices() async throws -> [ConnectedDevice] { devicesMock }
     func fetchDevices(inFolder folderID: UUID?) async throws -> [ConnectedDevice] {
         devicesMock.filter { $0.parentFolderID == folderID }
+    }
+    func fetchDevices(inAquarium aquariumID: UUID?) async throws -> [ConnectedDevice] {
+        devicesMock.filter { $0.parentAquariumID == aquariumID }
     }
     func save(_ device: ConnectedDevice) async throws {}
     func update(_ device: ConnectedDevice) async throws {}
@@ -191,5 +224,12 @@ private final class PreviewDeviceRepository: DeviceRepository, @unchecked Sendab
     func save(_ folder: DeviceFolder) async throws {}
     func update(_ folder: DeviceFolder) async throws {}
     func delete(folderID: UUID) async throws {}
+    func fetchAllAquariums() async throws -> [Aquarium] { aquariumsMock }
+    func fetchAquariums(inFolder folderID: UUID?) async throws -> [Aquarium] {
+        aquariumsMock.filter { $0.parentFolderID == folderID }
+    }
+    func save(_ aquarium: Aquarium) async throws {}
+    func update(_ aquarium: Aquarium) async throws {}
+    func delete(aquariumID: UUID) async throws {}
 }
 #endif

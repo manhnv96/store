@@ -40,7 +40,12 @@ final class PersistenceController: @unchecked Sendable {
 
     private static func makeModel() -> NSManagedObjectModel {
         let model = NSManagedObjectModel()
-        model.entities = [makeDeviceEntityDescription(), makeFolderEntityDescription()]
+        model.entities = [
+            makeDeviceEntityDescription(),
+            makeFolderEntityDescription(),
+            makeAquariumEntityDescription(),
+            makeWaterReadingEntityDescription()
+        ]
         return model
     }
 
@@ -58,7 +63,8 @@ final class PersistenceController: @unchecked Sendable {
             ("connectionType", .stringAttributeType),
             ("connectedDate", .dateAttributeType),
             ("lastUpdate", .dateAttributeType),
-            ("parentFolderID", .UUIDAttributeType)
+            ("parentFolderID", .UUIDAttributeType),
+            ("parentAquariumID", .UUIDAttributeType)
         ]
 
         entity.properties = specs.map { name, type in
@@ -93,6 +99,67 @@ final class PersistenceController: @unchecked Sendable {
             attr.isOptional = true
             return attr
         }
+        return entity
+    }
+
+    private static func makeAquariumEntityDescription() -> NSEntityDescription {
+        let entity = NSEntityDescription()
+        entity.name = "AquariumEntity"
+        entity.managedObjectClassName = "AquariumEntity"
+
+        let specs: [(String, NSAttributeType)] = [
+            ("id", .UUIDAttributeType),
+            ("name", .stringAttributeType),
+            ("iconName", .stringAttributeType),
+            ("parentFolderID", .UUIDAttributeType),
+            ("createdDate", .dateAttributeType),
+            ("updatedDate", .dateAttributeType),
+            ("lastOpenDate", .dateAttributeType)
+        ]
+
+        entity.properties = specs.map { name, type in
+            let attr = NSAttributeDescription()
+            attr.name = name
+            attr.attributeType = type
+            attr.isOptional = true
+            return attr
+        }
+        return entity
+    }
+
+    private static func makeWaterReadingEntityDescription() -> NSEntityDescription {
+        let entity = NSEntityDescription()
+        entity.name = "WaterReadingEntity"
+        entity.managedObjectClassName = "WaterReadingEntity"
+
+        // `value` is a non-optional Double (default 0). Other UUID/String/Date are optional.
+        let optionalSpecs: [(String, NSAttributeType)] = [
+            ("id", .UUIDAttributeType),
+            ("aquariumID", .UUIDAttributeType),
+            ("parameter", .stringAttributeType),
+            ("timestamp", .dateAttributeType),
+            ("sourceRaw", .stringAttributeType),
+            ("note", .stringAttributeType),
+            ("createdAt", .dateAttributeType),
+            ("updatedAt", .dateAttributeType)
+        ]
+
+        var props: [NSAttributeDescription] = optionalSpecs.map { name, type in
+            let attr = NSAttributeDescription()
+            attr.name = name
+            attr.attributeType = type
+            attr.isOptional = true
+            return attr
+        }
+
+        let valueAttr = NSAttributeDescription()
+        valueAttr.name = "value"
+        valueAttr.attributeType = .doubleAttributeType
+        valueAttr.isOptional = false
+        valueAttr.defaultValue = 0.0
+        props.append(valueAttr)
+
+        entity.properties = props
         return entity
     }
 }

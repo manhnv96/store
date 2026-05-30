@@ -18,10 +18,13 @@ final class WaterDashboardViewModel {
     var logPage = 0
     let logsPerPage = 12
 
-    let device: ConnectedDevice
+    let aquarium: Aquarium
 
-    init(device: ConnectedDevice) {
-        self.device = device
+    init(aquarium: Aquarium, initialSelection: WaterParameterType? = nil) {
+        self.aquarium = aquarium
+        if let initialSelection {
+            self.selectedParameter = initialSelection
+        }
     }
 
     func onAppear() async {

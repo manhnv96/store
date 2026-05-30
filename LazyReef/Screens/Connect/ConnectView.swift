@@ -20,19 +20,24 @@ struct ConnectView: View {
 
 
     let preselectedFolderID: UUID?
+    let preselectedAquariumID: UUID?
     @State private var folders: [DeviceFolder] = []
+    @State private var aquariums: [Aquarium] = []
     @State private var selectedFolder: DeviceFolder?
+    @State private var selectedAquarium: Aquarium?
     private let repository: any DeviceRepository
     @Binding var navigationPath: NavigationPath
 
     init(
         preselectedFolderID: UUID? = nil,
+        preselectedAquariumID: UUID? = nil,
         preselectedImportType: ImportType? = nil,
         preselectedConnectionType: ConnectionType? = nil,
         repository: any DeviceRepository = CoreDataDeviceRepository(),
         navigationPath: Binding<NavigationPath>
     ) {
         self.preselectedFolderID = preselectedFolderID
+        self.preselectedAquariumID = preselectedAquariumID
         self._selectedImportType = State(initialValue: preselectedImportType ?? ImportType.allCases.first)
         self._selectedConnection = State(initialValue: preselectedConnectionType)
         self.repository = repository
@@ -45,6 +50,8 @@ struct ConnectView: View {
             switch selectedImportType {
             case .equipment:
                 equipmentView
+            case .aquarium:
+                aquariumView
             case .folder:
                 folderView
             case nil:
@@ -61,10 +68,15 @@ struct ConnectView: View {
         .task {
             do {
                 let repo = repository
-                folders = try await Task.detached(priority: .userInitiated) {
-                    try await repo.fetchAllFolders()
+                let (f, a) = try await Task.detached(priority: .userInitiated) {
+                    async let folders = try await repo.fetchAllFolders()
+                    async let aquariums = try await repo.fetchAllAquariums()
+                    return try await (folders, aquariums)
                 }.value
-                selectedFolder = folders.first { $0.id == preselectedFolderID }
+                folders = f
+                aquariums = a
+                selectedFolder = f.first { $0.id == preselectedFolderID }
+                selectedAquarium = a.first { $0.id == preselectedAquariumID }
             } catch {}
         }
     }
@@ -77,18 +89,22 @@ struct ConnectView: View {
             Divider().padding(.vertical, 4)
 
             // Manual connection — secondary
-            FolderPickerField(folders: folders, selectedFolder: $selectedFolder)
+            AquariumPickerField(
+                aquariums: aquariums,
+                folders: folders,
+                selectedAquarium: $selectedAquarium
+            )
             selectConnection
             switch selectedConnection {
             case .bluetooth:
                 ConnectViaBleView(
-                    selectedFolderID: selectedFolder?.id,
+                    selectedAquariumID: selectedAquarium?.id,
                     repository: repository,
                     navigationPath: $navigationPath
                 )
             case .wifi:
                 ConnectViaWifiView(
-                    selectedFolderID: selectedFolder?.id,
+                    selectedAquariumID: selectedAquarium?.id,
                     repository: repository,
                     navigationPath: $navigationPath
                 )
@@ -99,7 +115,7 @@ struct ConnectView: View {
     }
 
     private var qrScanButton: some View {
-        NavigationLink(value: ScanDestination(folderID: selectedFolder?.id)) {
+        NavigationLink(value: ScanDestination(aquariumID: selectedAquarium?.id)) {
             HStack(spacing: 14) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 12)
@@ -166,21 +182,33 @@ struct ConnectView: View {
             }
         )
     }
+
+    var aquariumView: some View {
+        CreateAquariumView(
+            selectedParent: selectedFolder,
+            folders: folders,
+            repository: repository,
+            navigationPath: $navigationPath,
+            onCreated: nil
+        )
+    }
 }
 
 // MARK: - QR Scan Destination
 
 struct ScanDestination: Hashable {
-    var folderID: UUID?
+    var aquariumID: UUID?
 }
 
 enum ImportType: String, CaseIterable, SegmentedPickerItem {
     case equipment
+    case aquarium
     case folder
-    
+
     var title: String {
         switch self {
         case .equipment: return Language.Import.typeEquipment
+        case .aquarium: return Language.Import.typeAquarium
         case .folder: return Language.Import.typeFolder
         }
     }

@@ -10,7 +10,9 @@ struct DeviceDetailView: View {
     let device: ConnectedDevice
 
     @State private var allFolders: [DeviceFolder] = []
+    @State private var allAquariums: [Aquarium] = []
     @State private var isLoading = true
+    @State private var isDeleting = false
     @State private var showingDeleteAlert = false
     @State private var showingMoveSheet = false
     @State private var showingEditSheet = false
@@ -72,9 +74,9 @@ struct DeviceDetailView: View {
                         Button {
                             showingMoveSheet = true
                         } label: {
-                            Label("Move to Folder", systemImage: "folder.badge.gearshape")
+                            Label("Move to Aquarium", systemImage: "drop.fill")
                         }
-                        
+
                         Button {
                             showingEditSheet = true
                         } label: {
@@ -102,7 +104,7 @@ struct DeviceDetailView: View {
                         Button(role: .destructive) {
                             showingDeleteAlert = true
                         } label: {
-                            Label("Delete Device", systemImage: "trash")
+                            Label(Language.DeviceAction.deleteAction, systemImage: "trash")
                         }
                     }
                 } label: {
@@ -113,17 +115,17 @@ struct DeviceDetailView: View {
                 .menuOrder(.fixed)
             }
         }
-        .alert("Delete Device", isPresented: $showingDeleteAlert) {
-            Button("Cancel", role: .cancel) { }
-            
-            Button("Delete", role: .destructive) {
+        .alert(Language.DeviceAction.deleteConfirmTitle, isPresented: $showingDeleteAlert) {
+            Button(Language.DeviceAction.cancel, role: .cancel) { }
+
+            Button(Language.DeviceAction.confirmDelete, role: .destructive) {
                 deleteDevice()
             }
         } message: {
-            Text("Are you sure you want to delete '\(device.deviceName)'? This action cannot be undone.")
+            Text(Language.DeviceAction.deleteConfirmMessage)
         }
         .sheet(isPresented: $showingMoveSheet) {
-            MoveDeviceView(device: device, allFolders: allFolders, repository: repository)
+            MoveDeviceView(device: device, allAquariums: allAquariums, allFolders: allFolders, repository: repository)
         }
         .sheet(isPresented: $showingEditSheet) {
             EditDeviceView(device: device, repository: repository)
@@ -142,52 +144,12 @@ struct DeviceDetailView: View {
     private var contentView: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                dashboardBanner
                 infoSection
                 connectionSection
             }
             .padding(16)
         }
         .scrollBounceBehavior(.basedOnSize)
-        .navigationDestination(for: String.self) { destination in
-            if destination == "waterDashboard" {
-                WaterDashboardView(
-                    viewModel: WaterDashboardViewModel(device: device)
-                )
-            }
-        }
-    }
-
-    // MARK: - Dashboard Banner
-
-    private var dashboardBanner: some View {
-        NavigationLink(value: "waterDashboard") {
-            HStack(spacing: 14) {
-                Image(systemName: "chart.line.uptrend.xyaxis")
-                    .font(.title2)
-                    .foregroundStyle(.white)
-                    .frame(width: 44, height: 44)
-                    .background(.blue.gradient, in: RoundedRectangle(cornerRadius: 10))
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Water Dashboard")
-                        .font(.headline)
-                        .foregroundStyle(.primary)
-                    Text("View parameters & charts")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-
-                Spacer()
-
-                Image(systemName: "chevron.right")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.tertiary)
-            }
-            .padding(14)
-            .background(Color.gray.opacity(0.08), in: RoundedRectangle(cornerRadius: cornerRadius))
-        }
-        .buttonStyle(.plain)
     }
 
     // MARK: - Info
@@ -209,17 +171,15 @@ struct DeviceDetailView: View {
                         value: device.deviceDescription
                     )
                 }
-                if !device.category.isEmpty {
-                    Divider().padding(.leading)
-                    infoRow(
-                        title: Language.DeviceDetail.categoryLabel,
-                        value: device.category
-                    )
-                }
                 Divider().padding(.leading)
                 infoRow(
-                    title: Language.DeviceDetail.folderLabel,
-                    value: folderName
+                    title: Language.DeviceDetail.categoryLabel,
+                    value: device.kind.displayName
+                )
+                Divider().padding(.leading)
+                infoRow(
+                    title: Language.Aquarium.pickerTitle,
+                    value: aquariumName
                 )
             }
             .background(Color.gray.opacity(0.08), in: RoundedRectangle(cornerRadius: cornerRadius))
@@ -263,6 +223,14 @@ struct DeviceDetailView: View {
         return Language.CreateFolder.parentFolderNone
     }
 
+    private var aquariumName: String {
+        if let parentID = device.parentAquariumID,
+           let aquarium = allAquariums.first(where: { $0.id == parentID }) {
+            return aquarium.name
+        }
+        return Language.Aquarium.pickerNone
+    }
+
     private func infoRow(title: String, value: String) -> some View {
         HStack(spacing: 12) {
             Text(title)
@@ -297,17 +265,26 @@ struct DeviceDetailView: View {
     private func loadData() async {
         let repo = repository
         do {
-            allFolders = try await Task.detached(priority: .userInitiated) {
-                try await repo.fetchAllFolders()
+            let (folders, aquariums) = try await Task.detached(priority: .userInitiated) {
+                async let f = try await repo.fetchAllFolders()
+                async let a = try await repo.fetchAllAquariums()
+                return try await (f, a)
             }.value
+            allFolders = folders
+            allAquariums = aquariums
         } catch {}
         isLoading = false
     }
-    
+
     // MARK: - Actions
-    
+
     private func deleteDevice() {
+        guard !isDeleting else { return }
+        isDeleting = true
         Task {
+            if device.connectionType == .bluetooth {
+                BluetoothManager.shared.disconnect(connectedDevice: device)
+            }
             do {
                 try await repository.delete(deviceID: device.id)
                 await MainActor.run {
@@ -316,6 +293,7 @@ struct DeviceDetailView: View {
                 }
             } catch {
                 print("Error deleting device: \(error)")
+                isDeleting = false
             }
         }
     }
@@ -345,32 +323,34 @@ struct DeviceDetailView: View {
 
 struct MoveDeviceView: View {
     let device: ConnectedDevice
+    let allAquariums: [Aquarium]
     let allFolders: [DeviceFolder]
     let repository: any DeviceRepository
-    
+
     @Environment(\.dismiss) private var dismiss
-    @State private var selectedFolderID: UUID?
-    
-    init(device: ConnectedDevice, allFolders: [DeviceFolder], repository: any DeviceRepository) {
+    @State private var selectedAquariumID: UUID?
+
+    init(device: ConnectedDevice, allAquariums: [Aquarium], allFolders: [DeviceFolder], repository: any DeviceRepository) {
         self.device = device
+        self.allAquariums = allAquariums
         self.allFolders = allFolders
         self.repository = repository
-        _selectedFolderID = State(initialValue: device.parentFolderID)
+        _selectedAquariumID = State(initialValue: device.parentAquariumID)
     }
-    
+
     var body: some View {
         NavigationStack {
             List {
                 Section {
                     Button {
-                        selectedFolderID = nil
+                        selectedAquariumID = nil
                     } label: {
                         HStack {
-                            Image(systemName: "folder")
-                                .foregroundStyle(.blue)
-                            Text("Root (No Folder)")
+                            Image(systemName: "xmark.circle")
+                                .foregroundStyle(.secondary)
+                            Text(Language.Aquarium.pickerNone)
                             Spacer()
-                            if selectedFolderID == nil {
+                            if selectedAquariumID == nil {
                                 Image(systemName: "checkmark")
                                     .foregroundStyle(.blue)
                             }
@@ -378,19 +358,27 @@ struct MoveDeviceView: View {
                     }
                     .foregroundStyle(.primary)
                 }
-                
-                if !allFolders.isEmpty {
-                    Section("Folders") {
-                        ForEach(allFolders) { folder in
+
+                if !allAquariums.isEmpty {
+                    Section(Language.Aquarium.pickerTitle) {
+                        ForEach(allAquariums) { aquarium in
                             Button {
-                                selectedFolderID = folder.id
+                                selectedAquariumID = aquarium.id
                             } label: {
                                 HStack {
-                                    Image(systemName: folder.iconName)
+                                    Image(systemName: aquarium.iconName)
                                         .foregroundStyle(.blue)
-                                    Text(folder.name)
+                                    VStack(alignment: .leading, spacing: 1) {
+                                        Text(aquarium.name)
+                                        if let folderID = aquarium.parentFolderID,
+                                           let folder = allFolders.first(where: { $0.id == folderID }) {
+                                            Text(folder.name)
+                                                .font(.caption2)
+                                                .foregroundStyle(.secondary)
+                                        }
+                                    }
                                     Spacer()
-                                    if selectedFolderID == folder.id {
+                                    if selectedAquariumID == aquarium.id {
                                         Image(systemName: "checkmark")
                                             .foregroundStyle(.blue)
                                     }
@@ -417,12 +405,12 @@ struct MoveDeviceView: View {
             }
         }
     }
-    
+
     private func moveDevice() {
         Task {
             do {
                 var updatedDevice = device
-                updatedDevice.parentFolderID = selectedFolderID
+                updatedDevice.parentAquariumID = selectedAquariumID
                 try await repository.update(updatedDevice)
                 await MainActor.run {
                     dismiss()
@@ -443,24 +431,29 @@ struct EditDeviceView: View {
     @State private var deviceName: String
     @State private var inputName: String
     @State private var deviceDescription: String
-    @State private var category: String
-    
+    @State private var selectedKind: DeviceKind
+
     init(device: ConnectedDevice, repository: any DeviceRepository) {
         self.device = device
         self.repository = repository
         _deviceName = State(initialValue: device.deviceName)
         _inputName = State(initialValue: device.inputName)
         _deviceDescription = State(initialValue: device.deviceDescription)
-        _category = State(initialValue: device.category)
+        _selectedKind = State(initialValue: DeviceKind.from(rawCategory: device.category))
     }
-    
+
     var body: some View {
         NavigationStack {
             Form {
                 Section("Device Information") {
                     TextField("Device Name", text: $deviceName)
                     TextField("Input Name", text: $inputName)
-                    TextField("Category", text: $category)
+                    Picker(Language.DeviceDetail.categoryLabel, selection: $selectedKind) {
+                        ForEach(DeviceKind.allCases, id: \.self) { kind in
+                            Label(kind.displayName, systemImage: kind.iconSystemName)
+                                .tag(kind)
+                        }
+                    }
                 }
                 
                 Section("Description") {
@@ -504,7 +497,7 @@ struct EditDeviceView: View {
                 updatedDevice.deviceName = deviceName
                 updatedDevice.inputName = inputName
                 updatedDevice.deviceDescription = deviceDescription
-                updatedDevice.category = category
+                updatedDevice.category = selectedKind.rawValue
                 try await repository.update(updatedDevice)
                 await MainActor.run {
                     triggerHomeRefresh()

@@ -15,9 +15,10 @@ struct ConnectViaWifiView: View {
 
     @FocusState private var focusedField: Field?
 
-    var selectedFolderID: UUID?
+    var selectedAquariumID: UUID?
     var repository: any DeviceRepository
     @Binding var navigationPath: NavigationPath
+    @Environment(\.triggerHomeRefresh) private var triggerHomeRefresh
 
     private enum Field: Hashable {
         case ipAddress, deviceName
@@ -90,17 +91,19 @@ struct ConnectViaWifiView: View {
             deviceName: name,
             inputName: trimmedIP,
             deviceDescription: "",
-            category: "",
+            category: DeviceKind.other.rawValue,
             connectionType: .wifi,
             connectedDate: .now,
             lastUpdate: .now,
-            parentFolderID: selectedFolderID
+            parentFolderID: nil,
+            parentAquariumID: selectedAquariumID
         )
 
         isSaving = true
         Task {
             try? await repository.save(device)
             isSaving = false
+            triggerHomeRefresh()
             var newPath = NavigationPath()
             newPath.append(DeviceCreationResult(deviceName: name, connectionType: .wifi))
             navigationPath = newPath

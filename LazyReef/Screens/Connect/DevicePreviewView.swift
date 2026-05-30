@@ -8,12 +8,14 @@ import SwiftUI
 struct DevicePreviewView: View {
 
     let deviceInfo: QRDeviceInfo
+    let aquariums: [Aquarium]
     let folders: [DeviceFolder]
+    let preselectedAquariumID: UUID?
     let repository: any DeviceRepository
     @Binding var navigationPath: NavigationPath
 
     @Environment(\.triggerHomeRefresh) private var triggerHomeRefresh
-    @State private var selectedFolder: DeviceFolder?
+    @State private var selectedAquarium: Aquarium?
     @State private var customName: String = ""
     @State private var isSaving = false
     @State private var animateCheckmark = false
@@ -39,6 +41,11 @@ struct DevicePreviewView: View {
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             customName = deviceInfo.name
+            if selectedAquarium == nil,
+               let id = preselectedAquariumID,
+               let match = aquariums.first(where: { $0.id == id }) {
+                selectedAquarium = match
+            }
         }
     }
 
@@ -115,25 +122,11 @@ struct DevicePreviewView: View {
     // MARK: - Folder Picker
 
     private var folderPicker: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(Language.Device.folderTitle)
-                .font(.subheadline.weight(.semibold))
-
-            if folders.isEmpty {
-                HStack(spacing: 8) {
-                    Image(systemName: "folder")
-                        .foregroundStyle(.secondary)
-                    Text(Language.Device.folderNone)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                .padding(12)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.gray.opacity(0.06), in: RoundedRectangle(cornerRadius: 10))
-            } else {
-                FolderPickerField(folders: folders, selectedFolder: $selectedFolder)
-            }
-        }
+        AquariumPickerField(
+            aquariums: aquariums,
+            folders: folders,
+            selectedAquarium: $selectedAquarium
+        )
     }
 
     // MARK: - Name
@@ -200,7 +193,7 @@ struct DevicePreviewView: View {
         let name = customName.trimmingCharacters(in: .whitespaces)
         let finalName = name.isEmpty ? deviceInfo.name : name
 
-        var device = deviceInfo.toConnectedDevice(folderID: selectedFolder?.id)
+        var device = deviceInfo.toConnectedDevice(aquariumID: selectedAquarium?.id)
         device.deviceName = finalName
 
         isSaving = true
@@ -228,7 +221,9 @@ struct DevicePreviewView: View {
     NavigationStack(path: $path) {
         DevicePreviewView(
             deviceInfo: .mock,
+            aquariums: Aquarium.mocks,
             folders: [],
+            preselectedAquariumID: nil,
             repository: CoreDataDeviceRepository(),
             navigationPath: $path
         )

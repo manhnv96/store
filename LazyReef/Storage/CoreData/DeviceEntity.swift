@@ -18,6 +18,7 @@ final class DeviceEntity: NSManagedObject {
     @NSManaged var connectedDate: Date?
     @NSManaged var lastUpdate: Date?
     @NSManaged var parentFolderID: UUID?
+    @NSManaged var parentAquariumID: UUID?
 }
 
 extension DeviceEntity {
@@ -42,7 +43,8 @@ extension DeviceEntity {
             connectionType: connectionType,
             connectedDate: connectedDate,
             lastUpdate: lastUpdate,
-            parentFolderID: parentFolderID
+            parentFolderID: parentFolderID,
+            parentAquariumID: parentAquariumID
         )
     }
 
@@ -56,5 +58,6 @@ extension DeviceEntity {
         connectedDate = device.connectedDate
         lastUpdate = device.lastUpdate
         parentFolderID = device.parentFolderID
+        parentAquariumID = device.parentAquariumID
     }
 }

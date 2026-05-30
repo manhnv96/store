@@ -17,6 +17,11 @@ struct ConnectedDevice: Identifiable, Hashable {
     var connectedDate: Date
     var lastUpdate: Date
     var parentFolderID: UUID?
+    var parentAquariumID: UUID?
+
+    var kind: DeviceKind {
+        DeviceKind.from(rawCategory: category)
+    }
 }
 
 #if DEBUG
@@ -27,22 +32,24 @@ extension ConnectedDevice {
             deviceName: "Smart Speaker",
             inputName: "BLE-Speaker-01",
             deviceDescription: "Bluetooth speaker in living room",
-            category: "Audio",
+            category: DeviceKind.controller.rawValue,
             connectionType: .bluetooth,
             connectedDate: Date(),
             lastUpdate: Date(),
-            parentFolderID: nil
+            parentFolderID: nil,
+            parentAquariumID: nil
         ),
         ConnectedDevice(
             id: UUID(),
             deviceName: "Home Camera",
             inputName: "CAM-192.168.1.10",
             deviceDescription: "Front door camera",
-            category: "Security",
+            category: DeviceKind.sensor.rawValue,
             connectionType: .wifi,
             connectedDate: Date(),
             lastUpdate: Date(),
-            parentFolderID: nil
+            parentFolderID: nil,
+            parentAquariumID: nil
         )
     ]
 }

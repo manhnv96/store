@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ConnectDestination: Hashable {
     var folderID: UUID?
+    var aquariumID: UUID?
     var importType: ImportType?
     var connectionType: ConnectionType?
 }
@@ -20,7 +21,7 @@ struct DeviceCreationResult: Hashable {
 
 struct ScannedDevicePreview: Hashable {
     let info: QRDeviceInfo
-    let folderID: UUID?
+    let aquariumID: UUID?
 }
 
 struct HomeView: View {
@@ -54,6 +55,7 @@ struct HomeView: View {
             .navigationDestination(for: ConnectDestination.self) { destination in
                 ConnectView(
                     preselectedFolderID: destination.folderID,
+                    preselectedAquariumID: destination.aquariumID,
                     preselectedImportType: destination.importType,
                     preselectedConnectionType: destination.connectionType,
                     navigationPath: $path
@@ -61,6 +63,11 @@ struct HomeView: View {
             }
             .navigationDestination(for: DeviceFolder.self) { folder in
                 FolderDetailView(folder: folder)
+            }
+            .navigationDestination(for: Aquarium.self) { aquarium in
+                AquariumDetailView(
+                    viewModel: AquariumDetailViewModel(aquarium: aquarium)
+                )
             }
             .navigationDestination(for: ConnectedDevice.self) { device in
                 DeviceDetailView(device: device)
@@ -75,13 +82,15 @@ struct HomeView: View {
             }
             .navigationDestination(for: ScanDestination.self) { dest in
                 QRScannerView { scannedInfo in
-                    path.append(ScannedDevicePreview(info: scannedInfo, folderID: dest.folderID))
+                    path.append(ScannedDevicePreview(info: scannedInfo, aquariumID: dest.aquariumID))
                 }
             }
             .navigationDestination(for: ScannedDevicePreview.self) { preview in
                 DevicePreviewView(
                     deviceInfo: preview.info,
-                    folders: viewModel.folders,
+                    aquariums: viewModel.allAquariums,
+                    folders: viewModel.allFolders,
+                    preselectedAquariumID: preview.aquariumID,
                     repository: CoreDataDeviceRepository(),
                     navigationPath: $path
                 )
@@ -147,13 +156,20 @@ struct HomeView: View {
                     }
 
                     ForEach(viewModel.folders) { folder in
-                        let devices = viewModel.devices(for: folder)
                         let subs = viewModel.subFolders(for: folder)
-                        if devices.isEmpty && subs.isEmpty {
+                        let aquariums = viewModel.aquariums(in: folder)
+                        if aquariums.isEmpty && subs.isEmpty {
                             emptyFolderSection(folder: folder)
                         } else {
-                            folderSection(folder: folder, subFolders: subs, devices: devices)
+                            folderSection(folder: folder, subFolders: subs, aquariums: aquariums)
                         }
+                    }
+
+                    if !viewModel.rootAquariums.isEmpty {
+                        aquariumSection(
+                            title: Language.Aquarium.title,
+                            aquariums: viewModel.rootAquariums
+                        )
                     }
 
                     if !viewModel.ungroupedDevices.isEmpty {
@@ -231,6 +247,11 @@ struct HomeView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 quickStartItem(
+                    icon: "drop.fill",
+                    title: Language.Aquarium.createTitle,
+                    destination: ConnectDestination(importType: .aquarium)
+                )
+                quickStartItem(
                     icon: "personalhotspot",
                     title: Language.Home.connectBle,
                     destination: ConnectDestination(importType: .equipment, connectionType: .bluetooth)
@@ -279,7 +300,7 @@ struct HomeView: View {
         Array(repeating: GridItem(.flexible(), spacing: itemSpacing), count: Int(itemsPerRow))
     }
 
-    private func folderSection(folder: DeviceFolder, subFolders: [DeviceFolder], devices: [ConnectedDevice]) -> some View {
+    private func folderSection(folder: DeviceFolder, subFolders: [DeviceFolder], aquariums: [Aquarium]) -> some View {
         Section {
             LazyVGrid(columns: gridColumns, spacing: itemSpacing) {
                 ForEach(subFolders) { sub in
@@ -288,9 +309,12 @@ struct HomeView: View {
                     }
                     .buttonStyle(.plain)
                 }
-                ForEach(devices) { device in
-                    NavigationLink(value: device) {
-                        DeviceView(device: device)
+                ForEach(aquariums) { aquarium in
+                    NavigationLink(value: aquarium) {
+                        AquariumCardView(
+                            aquarium: aquarium,
+                            deviceCount: viewModel.devices(in: aquarium).count
+                        )
                     }
                     .buttonStyle(.plain)
                 }
@@ -308,6 +332,37 @@ struct HomeView: View {
                     .foregroundStyle(.primary)
                 Spacer()
                 NavigationLink(value: ConnectDestination(folderID: folder.id)) {
+                    Image(systemName: "plus").font(.title)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 5)
+        }
+    }
+
+    private func aquariumSection(title: String, aquariums: [Aquarium]) -> some View {
+        Section {
+            LazyVGrid(columns: gridColumns, spacing: itemSpacing) {
+                ForEach(aquariums) { aquarium in
+                    NavigationLink(value: aquarium) {
+                        AquariumCardView(
+                            aquarium: aquarium,
+                            deviceCount: viewModel.devices(in: aquarium).count
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(16)
+            .background(Color.brown.opacity(0.1).cornerRadius(cornerRadius))
+        } header: {
+            HStack {
+                Text(title)
+                    .font(.title)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.primary)
+                Spacer()
+                NavigationLink(value: ConnectDestination(importType: .aquarium)) {
                     Image(systemName: "plus").font(.title)
                 }
             }

@@ -1,24 +1,24 @@
 //
-//  DeviceView.swift
-//  Store
+//  AquariumCardView.swift
+//  LazyReef
 //
-//  Created by Mạnh Nguyễn Văn on 04/4/26.
+//  Created by Mạnh Nguyễn Văn on 30/5/26.
 //
 
 import SwiftUI
 
-struct DeviceView: View {
-    let device: ConnectedDevice
-    
+struct AquariumCardView: View {
+    let aquarium: Aquarium
+    let deviceCount: Int
+
     var body: some View {
-        let kind = device.kind
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .center) {
-                Image(systemName: kind.iconSystemName)
+                Image(systemName: aquarium.iconName)
                     .font(.headline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.blue)
                 Spacer()
-                Text(kind.displayName)
+                Text("\(deviceCount)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 8)
@@ -29,11 +29,11 @@ struct DeviceView: View {
             Spacer()
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(device.deviceName)
+                Text(aquarium.name)
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.primary)
                     .lineLimit(1)
-                Text(device.inputName)
+                Text(Language.AquariumDetail.deviceCount)
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
@@ -47,7 +47,7 @@ struct DeviceView: View {
 
 #if DEBUG
 #Preview(traits: .fixedLayout(width: 300, height: 200)) {
-    DeviceView(device: ConnectedDevice.mocks[0])
+    AquariumCardView(aquarium: Aquarium.mocks[0], deviceCount: 3)
         .frame(width: 180)
         .padding()
 }

@@ -15,7 +15,7 @@ struct FolderDetailView: View {
     let folder: DeviceFolder
 
     @State private var subFolders: [DeviceFolder] = []
-    @State private var devices: [ConnectedDevice] = []
+    @State private var aquariums: [Aquarium] = []
     @State private var allFolders: [DeviceFolder] = []
     @State private var isLoading = true
     @State private var showingDeleteAlert = false
@@ -149,7 +149,7 @@ struct FolderDetailView: View {
             EditFolderView(folder: folder, repository: repository)
         }
         .sheet(isPresented: $showingShareSheet) {
-            ShareFolderView(folder: folder, deviceCount: devices.count, subFolderCount: subFolders.count)
+            ShareFolderView(folder: folder, deviceCount: aquariums.count, subFolderCount: subFolders.count)
         }
         .sheet(isPresented: $showingCreateSubFolderSheet) {
             CreateSubFolderView(parentFolder: folder, repository: repository)
@@ -166,7 +166,7 @@ struct FolderDetailView: View {
                 if !subFolders.isEmpty {
                     subFoldersSection
                 }
-                devicesSection
+                aquariumsSection
             }
             .padding(16)
         }
@@ -267,34 +267,41 @@ struct FolderDetailView: View {
         }
     }
 
-    private var devicesSection: some View {
+    private var aquariumsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text(Language.FolderDetail.devicesTitle)
+                Text(Language.Aquarium.title)
                     .font(.title2.weight(.semibold))
-                Text("(\(devices.count))")
+                Text("(\(aquariums.count))")
                     .font(.title3.weight(.regular))
                     .foregroundStyle(.secondary)
                 Spacer()
+                NavigationLink(value: ConnectDestination(folderID: folder.id, importType: .aquarium)) {
+                    Image(systemName: "plus").font(.title2)
+                }
             }
 
-            if devices.isEmpty {
+            if aquariums.isEmpty {
                 VStack(spacing: 12) {
                     Image(systemName: "tray")
                         .font(.title2)
                         .foregroundStyle(.secondary)
-                    Text(Language.FolderDetail.devicesEmpty)
+                    Text(Language.Aquarium.listEmpty)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
+                    NavigationLink(value: ConnectDestination(folderID: folder.id, importType: .aquarium)) {
+                        Text(Language.Aquarium.addAction)
+                            .font(.subheadline.weight(.medium))
+                    }
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 24)
                 .background(Color.gray.opacity(0.08), in: RoundedRectangle(cornerRadius: cornerRadius))
             } else {
                 LazyVGrid(columns: gridColumns, spacing: itemSpacing) {
-                    ForEach(devices) { device in
-                        NavigationLink(value: device) {
-                            DeviceView(device: device)
+                    ForEach(aquariums) { aquarium in
+                        NavigationLink(value: aquarium) {
+                            AquariumCardView(aquarium: aquarium, deviceCount: 0)
                         }
                         .buttonStyle(.plain)
                     }
@@ -302,6 +309,11 @@ struct FolderDetailView: View {
                 .padding()
                 .background(Color.gray.opacity(0.08), in: RoundedRectangle(cornerRadius: cornerRadius))
             }
+        }
+        .navigationDestination(for: Aquarium.self) { aquarium in
+            AquariumDetailView(
+                viewModel: AquariumDetailViewModel(aquarium: aquarium, repository: repository)
+            )
         }
         .navigationDestination(for: ConnectedDevice.self) { device in
             DeviceDetailView(device: device, repository: repository)
@@ -315,15 +327,15 @@ struct FolderDetailView: View {
         let folderID = folder.id
 
         do {
-            let (folders, devs) = try await Task.detached(priority: .userInitiated) {
+            let (folders, aqs) = try await Task.detached(priority: .userInitiated) {
                 async let f = try await repo.fetchAllFolders()
-                async let d = try await repo.fetchDevices(inFolder: folderID)
-                return try await (f, d)
+                async let a = try await repo.fetchAquariums(inFolder: folderID)
+                return try await (f, a)
             }.value
 
             allFolders = folders
             subFolders = folders.filter { $0.parentFolderID == folderID }
-            devices = devs
+            aquariums = aqs
         } catch {}
 
         isLoading = false
@@ -336,31 +348,35 @@ struct FolderDetailView: View {
             do {
                 switch option {
                 case .removeAllChildren:
-                    // Delete all child folders and devices first
+                    // Delete all subfolders (their aquariums are not recursively deleted here)
                     for subFolder in subFolders {
                         try await repository.delete(folderID: subFolder.id)
                     }
-                    for device in devices {
-                        try await repository.delete(deviceID: device.id)
+                    // Delete the aquariums in this folder; their devices become ungrouped
+                    for aquarium in aquariums {
+                        let aquariumDevices = try await repository.fetchDevices(inAquarium: aquarium.id)
+                        for var device in aquariumDevices {
+                            device.parentAquariumID = nil
+                            try await repository.update(device)
+                        }
+                        try await repository.delete(aquariumID: aquarium.id)
                     }
-                    // Then delete the folder itself
                     try await repository.delete(folderID: folder.id)
-                    
+
                 case .moveChildrenToParent:
                     // Move all child folders to parent
                     for var subFolder in subFolders {
                         subFolder.parentFolderID = folder.parentFolderID
                         try await repository.update(subFolder)
                     }
-                    // Move all devices to parent
-                    for var device in devices {
-                        device.parentFolderID = folder.parentFolderID
-                        try await repository.update(device)
+                    // Move all aquariums to parent
+                    for var aquarium in aquariums {
+                        aquarium.parentFolderID = folder.parentFolderID
+                        try await repository.update(aquarium)
                     }
-                    // Then delete the folder
                     try await repository.delete(folderID: folder.id)
                 }
-                
+
                 // Navigate back after deletion
                 await MainActor.run {
                     triggerHomeRefresh()
@@ -371,26 +387,25 @@ struct FolderDetailView: View {
             }
         }
     }
-    
+
     private func printFolderSummary() {
         print("Folder: \(folder.name)")
-        print("Contains: \(devices.count) devices, \(subFolders.count) subfolders")
+        print("Contains: \(aquariums.count) aquariums, \(subFolders.count) subfolders")
     }
-    
+
     private func exportFolderStructure() {
         let structure: [String: Any] = [
             "name": folder.name,
             "icon": folder.iconName,
-            "deviceCount": devices.count,
+            "aquariumCount": aquariums.count,
             "subFolderCount": subFolders.count,
-            "devices": devices.map { $0.deviceName },
+            "aquariums": aquariums.map { $0.name },
             "subFolders": subFolders.map { $0.name }
         ]
-        
+
         if let jsonData = try? JSONSerialization.data(withJSONObject: structure, options: .prettyPrinted),
            let jsonString = String(data: jsonData, encoding: .utf8) {
             print("Folder Structure:\n\(jsonString)")
-            // TODO: Present share sheet with the structure file
         }
     }
 }

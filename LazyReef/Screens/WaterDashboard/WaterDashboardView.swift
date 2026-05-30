@@ -6,6 +6,12 @@
 import SwiftUI
 import Charts
 
+/// Navigation value used to push WaterDashboardView. When `focusedParameter` is set,
+/// the dashboard opens with that parameter selected.
+struct WaterDashboardDestination: Hashable {
+    var focusedParameter: WaterParameterType?
+}
+
 struct WaterDashboardView: View {
 
     @State var viewModel: WaterDashboardViewModel
@@ -28,7 +34,7 @@ struct WaterDashboardView: View {
         .toolbar(.hidden, for: .tabBar)
         .toolbar {
             ToolbarItem(placement: .title) {
-                Text(viewModel.device.deviceName)
+                Text(viewModel.aquarium.name)
                     .font(.title3.weight(.medium))
             }
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -244,6 +250,9 @@ struct WaterDashboardView: View {
         case "pink": return .pink
         case "red": return .red
         case "cyan": return .cyan
+        case "teal": return .teal
+        case "indigo": return .indigo
+        case "yellow": return .yellow
         default: return .gray
         }
     }
@@ -388,7 +397,7 @@ struct ParameterCardView: View {
 #Preview {
     NavigationStack {
         WaterDashboardView(
-            viewModel: WaterDashboardViewModel(device: ConnectedDevice.mocks[0])
+            viewModel: WaterDashboardViewModel(aquarium: Aquarium.mocks[0])
         )
     }
 }

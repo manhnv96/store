@@ -49,17 +49,18 @@ struct QRDeviceInfo: Codable, Hashable {
         }
     }
 
-    func toConnectedDevice(folderID: UUID? = nil) -> ConnectedDevice {
+    func toConnectedDevice(aquariumID: UUID? = nil) -> ConnectedDevice {
         ConnectedDevice(
             id: UUID(),
             deviceName: name,
             inputName: identifier,
             deviceDescription: "\(manufacturer) \(model) — FW \(firmwareVersion)",
-            category: deviceType,
+            category: DeviceKind.from(rawCategory: deviceType).rawValue,
             connectionType: parsedConnectionType,
             connectedDate: .now,
             lastUpdate: .now,
-            parentFolderID: folderID
+            parentFolderID: nil,
+            parentAquariumID: aquariumID
         )
     }
 }
