@@ -47,6 +47,9 @@ final class WakeWordListener {
     /// Signatures of readings already emitted in this listening session so we
     /// don't fire the same value twice from re-arriving partial results.
     private var emittedSignatures: Set<String> = []
+    /// Tracks how much of the normalized transcript has already been scanned
+    /// so we don't re-trigger on the same wake phrase as partial results grow.
+    private var processedPrefixLength: Int = 0
 
     /// Wake phrases recognised after diacritic stripping + lowercasing.
     /// Primary phrase is "ghi log"; the rest cover common mis-transcriptions

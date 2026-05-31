@@ -19,6 +19,9 @@ struct AquariumDetailView: View {
     @State private var lastWakeReading: ParsedReading?
     @State private var toastVisible = false
     @State private var toastDismissTask: Task<Void, Never>?
+    /// True once the user explicitly turned wake mode off via the ear button
+    /// or banner Stop. Prevents auto-resume after dismissing a sheet.
+    @State private var userDisabledWake = false
 
     var body: some View {
         Group {
@@ -124,6 +127,15 @@ struct AquariumDetailView: View {
         }
         .task {
             await viewModel.onAppear()
+        }
+        .task {
+            await startWakeIfNeeded()
+        }
+        .onChange(of: showingLogForm) { _, isShowing in
+            handleSheetPresentationChange(isShowing)
+        }
+        .onChange(of: showingVoiceLog) { _, isShowing in
+            handleSheetPresentationChange(isShowing)
         }
     }
 
@@ -465,6 +477,7 @@ struct AquariumDetailView: View {
             Spacer()
             Button(Language.WakeMode.stop) {
                 wake.stop()
+                userDisabledWake = true
             }
             .font(.caption.weight(.semibold))
             .padding(.horizontal, 10)
@@ -528,13 +541,32 @@ struct AquariumDetailView: View {
     private func toggleWakeMode() {
         if wake.isActive {
             wake.stop()
+            userDisabledWake = true
         } else {
-            wake.onReadingDetected = { reading in
-                Task { @MainActor in
-                    handleWakeReading(reading)
-                }
+            userDisabledWake = false
+            Task { await startWakeIfNeeded() }
+        }
+    }
+
+    /// Start the wake listener when entering the view (or after a sheet closes)
+    /// — unless the user has explicitly disabled it via the ear button.
+    private func startWakeIfNeeded() async {
+        guard !wake.isActive, !userDisabledWake else { return }
+        wake.onReadingDetected = { reading in
+            Task { @MainActor in
+                handleWakeReading(reading)
             }
-            Task { await wake.start() }
+        }
+        await wake.start()
+    }
+
+    /// Pause wake mode while a sheet (manual form or voice log) is presented
+    /// to free the shared audio session, then resume on dismiss.
+    private func handleSheetPresentationChange(_ isShowing: Bool) {
+        if isShowing {
+            if wake.isActive { wake.stop() }
+        } else {
+            Task { await startWakeIfNeeded() }
         }
     }
 
