@@ -22,6 +22,7 @@ struct AquariumDetailView: View {
     /// True once the user explicitly turned wake mode off via the ear button
     /// or banner Stop. Prevents auto-resume after dismissing a sheet.
     @State private var userDisabledWake = false
+    @State private var showingSetupEdit = false
 
     var body: some View {
         Group {
@@ -55,6 +56,14 @@ struct AquariumDetailView: View {
             ToolbarItem(placement: .title) {
                 Text(viewModel.aquarium.name)
                     .font(.title3.weight(.medium))
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    showingSetupEdit = true
+                } label: {
+                    Image(systemName: "slider.horizontal.3")
+                        .font(.title3)
+                }
             }
         }
         .navigationDestination(for: WaterDashboardDestination.self) { dest in
@@ -123,6 +132,19 @@ struct AquariumDetailView: View {
                 aquariumName: viewModel.aquarium.name
             ) { reading in
                 Task { await viewModel.save(reading) }
+            }
+        }
+        .sheet(isPresented: $showingSetupEdit) {
+            AquariumSetupEditView(
+                initialSump: viewModel.aquarium.sumpType,
+                initialLivestock: viewModel.aquarium.livestockType
+            ) { sump, livestock in
+                Task {
+                    await viewModel.updateSettings(
+                        sumpType: sump,
+                        livestockType: livestock
+                    )
+                }
             }
         }
         .task {
@@ -430,7 +452,7 @@ struct AquariumDetailView: View {
             )
         }
         .buttonStyle(.plain)
-        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+        .contextMenu {
             Button(role: .destructive) {
                 logToDelete = log
             } label: {

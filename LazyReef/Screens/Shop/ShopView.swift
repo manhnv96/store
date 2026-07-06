@@ -24,6 +24,10 @@ private struct OnOrderPlacedKey: EnvironmentKey {
     static let defaultValue: (Order) -> Void = { _ in }
 }
 
+private struct ShowOrderListKey: EnvironmentKey {
+    static let defaultValue: () -> Void = {}
+}
+
 extension EnvironmentValues {
     var popToCart: () -> Void {
         get { self[PopToCartKey.self] }
@@ -33,6 +37,11 @@ extension EnvironmentValues {
     var onOrderPlaced: (Order) -> Void {
         get { self[OnOrderPlacedKey.self] }
         set { self[OnOrderPlacedKey.self] = newValue }
+    }
+
+    var showOrderList: () -> Void {
+        get { self[ShowOrderListKey.self] }
+        set { self[ShowOrderListKey.self] = newValue }
     }
 }
 
@@ -62,13 +71,14 @@ struct ShopView: View {
 
     var body: some View {
         NavigationStack(path: $path) {
-            VStack(spacing: 0) {
-                categoryFilter
-                productList
-            }
+            productList
             .navigationTitle("Reef Shop")
             .navigationBarTitleDisplayMode(.large)
-            .searchable(text: $searchText, prompt: "Search devices & equipment")
+            .searchable(
+                text: $searchText,
+                placement: .navigationBarDrawer(displayMode: .automatic),
+                prompt: "Search devices & equipment"
+            )
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     NavigationLink(value: ShopRoute.cart) {
@@ -101,11 +111,17 @@ struct ShopView: View {
             }
         }
         .environment(\.onOrderPlaced) { order in
-            // Pop checkout, then push order confirmation
-            while path.count > 1 {
-                path.removeLast()
-            }
+            // Replace the entire stack (cart + checkout) with the order
+            // confirmation, so tapping back returns to the shop root
+            // rather than an empty cart.
+            path = NavigationPath()
             path.append(ShopRoute.orderConfirmation(order))
+        }
+        .environment(\.showOrderList) {
+            // Done from order confirmation → jump to Orders list, back
+            // returns to shop root (not to the cart or confirmation).
+            path = NavigationPath()
+            path.append(ShopRoute.orders)
         }
         .toolbar(isTabBarHidden ? .hidden : .visible, for: .tabBar)
         .onChange(of: path.count) { _, newValue in
@@ -157,20 +173,25 @@ struct ShopView: View {
 
     private var productList: some View {
         ScrollView {
-            LazyVStack(spacing: 12) {
-                ForEach(filteredProducts) { product in
-                    NavigationLink(value: product) {
-                        ProductRowView(product: product)
+            LazyVStack(spacing: 12, pinnedViews: [.sectionHeaders]) {
+                Section {
+                    ForEach(filteredProducts) { product in
+                        NavigationLink(value: product) {
+                            ProductRowView(product: product)
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.horizontal, 16)
                     }
-                    .buttonStyle(.plain)
-                }
 
-                if filteredProducts.isEmpty {
-                    emptyView
+                    if filteredProducts.isEmpty {
+                        emptyView
+                            .padding(.horizontal, 16)
+                    }
+                } header: {
+                    categoryFilter
+                        .background(Color(.systemBackground))
                 }
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 4)
             .padding(.bottom, 16)
         }
         .navigationDestination(for: ReefProduct.self) { product in

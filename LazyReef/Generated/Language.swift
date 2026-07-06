@@ -214,6 +214,36 @@ internal enum Language {
     /// Tạo bể cá mới
     internal static let createNewShortcut = Language.tr("Localizable", "aquarium.createNewShortcut", fallback: "+ Tạo bể cá mới")
   }
+  internal enum AquariumSetup {
+    /// Loại bể
+    internal static let sumpType = Language.tr("Localizable", "aquariumSetup.sumpType", fallback: "Loại bể")
+    /// Bể nuôi
+    internal static let livestockType = Language.tr("Localizable", "aquariumSetup.livestockType", fallback: "Bể nuôi")
+    /// Chưa chọn
+    internal static let unset = Language.tr("Localizable", "aquariumSetup.unset", fallback: "Chưa chọn")
+    /// Lọc vách
+    internal static let sumpBuiltIn = Language.tr("Localizable", "aquariumSetup.sumpBuiltIn", fallback: "Lọc vách")
+    /// Tràn dưới
+    internal static let sumpOverflow = Language.tr("Localizable", "aquariumSetup.sumpOverflow", fallback: "Tràn dưới")
+    /// Khác
+    internal static let sumpOther = Language.tr("Localizable", "aquariumSetup.sumpOther", fallback: "Khác")
+    /// Chỉ cá
+    internal static let livestockOnlyFish = Language.tr("Localizable", "aquariumSetup.livestockOnlyFish", fallback: "Chỉ cá")
+    /// Soft coral
+    internal static let livestockSoftCoral = Language.tr("Localizable", "aquariumSetup.livestockSoftCoral", fallback: "Soft coral")
+    /// LPS
+    internal static let livestockLPS = Language.tr("Localizable", "aquariumSetup.livestockLPS", fallback: "LPS")
+    /// SPS
+    internal static let livestockSPS = Language.tr("Localizable", "aquariumSetup.livestockSPS", fallback: "SPS")
+    /// Mix
+    internal static let livestockMix = Language.tr("Localizable", "aquariumSetup.livestockMix", fallback: "Mix")
+    /// Cài đặt bể
+    internal static let editTitle = Language.tr("Localizable", "aquariumSetup.editTitle", fallback: "Cài đặt bể")
+    /// Lưu
+    internal static let save = Language.tr("Localizable", "aquariumSetup.save", fallback: "Lưu")
+    /// Huỷ
+    internal static let cancel = Language.tr("Localizable", "aquariumSetup.cancel", fallback: "Huỷ")
+  }
   internal enum WaterParameter {
     /// Độ mặn
     internal static let salinity = Language.tr("Localizable", "waterParameter.salinity", fallback: "Độ mặn")

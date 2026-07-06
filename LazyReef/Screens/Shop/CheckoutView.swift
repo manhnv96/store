@@ -317,10 +317,11 @@ struct CheckoutView: View {
 
                 // Items
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Items (\(cart.itemCount))")
+                    let items = cart.selectedItems
+                    Text("Items (\(items.reduce(0) { $0 + $1.quantity }))")
                         .font(.subheadline.weight(.semibold))
                     VStack(spacing: 0) {
-                        ForEach(Array(cart.items.enumerated()), id: \.element.id) { index, item in
+                        ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                             HStack {
                                 Text("\(item.quantity)x")
                                     .font(.caption.weight(.semibold))
@@ -335,7 +336,7 @@ struct CheckoutView: View {
                             }
                             .padding(.horizontal, 14)
                             .padding(.vertical, 8)
-                            if index < cart.items.count - 1 {
+                            if index < items.count - 1 {
                                 Divider().padding(.leading, 42)
                             }
                         }

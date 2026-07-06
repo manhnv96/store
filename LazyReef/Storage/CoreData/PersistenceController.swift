@@ -112,6 +112,8 @@ final class PersistenceController: @unchecked Sendable {
             ("name", .stringAttributeType),
             ("iconName", .stringAttributeType),
             ("parentFolderID", .UUIDAttributeType),
+            ("sumpTypeRaw", .stringAttributeType),
+            ("livestockTypeRaw", .stringAttributeType),
             ("createdDate", .dateAttributeType),
             ("updatedDate", .dateAttributeType),
             ("lastOpenDate", .dateAttributeType)

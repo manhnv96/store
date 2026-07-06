@@ -178,9 +178,15 @@ enum VoiceLogParser {
                                    parameter: WaterParameterType) -> (Double, Int)? {
         guard start < tokens.count else { return nil }
 
-        // Fast path: a single ASCII numeric token like "450" or "8.2".
+        // Fast path: a single ASCII numeric token like "8.2" — but only if
+        // no further number-like tokens follow. Otherwise SFSpeechRecognizer
+        // splits like "450" → "4 5 0" or "4 trăm năm mươi" would truncate
+        // to just 4. In that case fall through to run-based parsing.
         if let v = Double(tokens[start]) {
-            return (v, 1)
+            let nextIsNumber = start + 1 < tokens.count && isNumberToken(tokens[start + 1])
+            if !nextIsNumber {
+                return (v, 1)
+            }
         }
 
         // Collect the contiguous run of number-like tokens.

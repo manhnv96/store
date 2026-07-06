@@ -11,7 +11,7 @@ import SwiftUI
 @Observable
 final class AquariumDetailViewModel {
 
-    let aquarium: Aquarium
+    private(set) var aquarium: Aquarium
     private(set) var devices: [ConnectedDevice] = []
     private(set) var parameters: [WaterParameterSummary] = []
     private(set) var recentLogs: [WaterReading] = []
@@ -88,6 +88,22 @@ final class AquariumDetailViewModel {
         do {
             try await logRepository.update(reading)
             await loadRecentLogs()
+        } catch {}
+    }
+
+    // MARK: - Settings
+
+    func updateSettings(
+        sumpType: AquariumSumpType?,
+        livestockType: AquariumLivestockType?
+    ) async {
+        var updated = aquarium
+        updated.sumpType = sumpType
+        updated.livestockType = livestockType
+        updated.updatedDate = .now
+        do {
+            try await repository.update(updated)
+            aquarium = updated
         } catch {}
     }
 

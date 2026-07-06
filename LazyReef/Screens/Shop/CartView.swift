@@ -45,19 +45,24 @@ struct CartView: View {
     private var cartContent: some View {
         VStack(spacing: 0) {
             List {
-                ForEach(cart.items) { item in
-                    cartRow(item)
-                }
-                .onDelete { indexSet in
-                    for index in indexSet {
-                        cart.remove(cart.items[index].id)
+                Section {
+                    ForEach(cart.items) { item in
+                        cartRow(item)
                     }
+                    .onDelete { indexSet in
+                        for index in indexSet {
+                            cart.remove(cart.items[index].id)
+                        }
+                    }
+                } header: {
+                    selectAllHeader
                 }
 
                 Section {
+                    summaryRow("Selected", value: "\(cart.selectedItems.count) / \(cart.items.count)")
                     summaryRow("Subtotal", value: cart.formattedSubtotal)
                     summaryRow("Shipping", value: cart.formattedShipping)
-                    if cart.subtotal < 100 {
+                    if cart.hasSelection && cart.subtotal < 100 {
                         HStack {
                             Image(systemName: "info.circle")
                                 .font(.caption)
@@ -83,8 +88,35 @@ struct CartView: View {
         }
     }
 
+    private var selectAllHeader: some View {
+        Button {
+            cart.setAllSelected(!cart.allSelected)
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: cart.allSelected ? "checkmark.square.fill" : "square")
+                    .font(.subheadline)
+                    .foregroundStyle(cart.allSelected ? .blue : .secondary)
+                Text(cart.allSelected ? "Deselect all" : "Select all")
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(.primary)
+                Spacer()
+            }
+            .textCase(nil)
+        }
+        .buttonStyle(.plain)
+    }
+
     private func cartRow(_ item: CartItem) -> some View {
-        HStack(spacing: 14) {
+        HStack(spacing: 12) {
+            Button {
+                cart.toggleSelection(item.id)
+            } label: {
+                Image(systemName: cart.isSelected(item.id) ? "checkmark.circle.fill" : "circle")
+                    .font(.title3)
+                    .foregroundStyle(cart.isSelected(item.id) ? .blue : .secondary)
+            }
+            .buttonStyle(.plain)
+
             ZStack {
                 RoundedRectangle(cornerRadius: 10)
                     .fill(Color.blue.opacity(0.1))
@@ -149,14 +181,20 @@ struct CartView: View {
             HStack(spacing: 8) {
                 Image(systemName: "lock.fill")
                     .font(.subheadline)
-                Text("Checkout — \(cart.formattedTotal)")
+                Text(cart.hasSelection
+                     ? "Checkout — \(cart.formattedTotal)"
+                     : "Select items to checkout")
                     .font(.subheadline.weight(.bold))
             }
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
-            .background(Color.blue, in: RoundedRectangle(cornerRadius: 12))
+            .background(
+                cart.hasSelection ? Color.blue : Color.gray,
+                in: RoundedRectangle(cornerRadius: 12)
+            )
         }
+        .disabled(!cart.hasSelection)
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
         .background(.ultraThinMaterial)

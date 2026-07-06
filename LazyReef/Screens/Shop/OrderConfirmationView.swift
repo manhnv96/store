@@ -8,7 +8,7 @@ import SwiftUI
 struct OrderConfirmationView: View {
 
     let order: Order
-    @Environment(\.popToCart) private var popToCart
+    @Environment(\.showOrderList) private var showOrderList
 
     var body: some View {
         ScrollView {
@@ -30,7 +30,7 @@ struct OrderConfirmationView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("Done") {
-                    popToCart()
+                    showOrderList()
                 }
                 .font(.subheadline.weight(.semibold))
             }

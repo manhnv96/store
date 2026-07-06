@@ -12,6 +12,8 @@ struct CreateAquariumView: View {
     @State private var aquariumName: String = ""
     @State private var selectedIconName: String = "drop.fill"
     @State var selectedParent: DeviceFolder?
+    @State private var selectedSumpType: AquariumSumpType?
+    @State private var selectedLivestockType: AquariumLivestockType?
     @State private var isSaving = false
     @State private var isDropdownExpanded = false
     @State private var expandedFolderIDs: Set<UUID> = []
@@ -38,6 +40,8 @@ struct CreateAquariumView: View {
                     parentFolderField
                     nameField
                     iconPickerSection
+                    sumpTypeSection
+                    livestockTypeSection
                 }
             }
             .scrollBounceBehavior(.basedOnSize)
@@ -274,6 +278,32 @@ struct CreateAquariumView: View {
         }
     }
 
+    // MARK: - Sump / Livestock Pickers
+
+    private var sumpTypeSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(Language.AquariumSetup.sumpType)
+                .font(.headline)
+                .foregroundStyle(Color.primary)
+            AquariumSetupChipRow(
+                options: AquariumSumpType.allCases,
+                selection: $selectedSumpType
+            )
+        }
+    }
+
+    private var livestockTypeSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(Language.AquariumSetup.livestockType)
+                .font(.headline)
+                .foregroundStyle(Color.primary)
+            AquariumSetupChipRow(
+                options: AquariumLivestockType.allCases,
+                selection: $selectedLivestockType
+            )
+        }
+    }
+
     // MARK: - Create Button
 
     private var createButton: some View {
@@ -297,6 +327,8 @@ struct CreateAquariumView: View {
             parentFolderID: selectedParent?.id,
             name: aquariumName.trimmingCharacters(in: .whitespaces),
             iconName: selectedIconName,
+            sumpType: selectedSumpType,
+            livestockType: selectedLivestockType,
             createdDate: .now,
             updatedDate: .now
         )

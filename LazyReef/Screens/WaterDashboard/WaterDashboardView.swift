@@ -61,6 +61,7 @@ struct WaterDashboardView: View {
     private var contentView: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
+                setupChips
                 chartSection
                 parameterGrid
                 logsSection
@@ -71,6 +72,36 @@ struct WaterDashboardView: View {
         .refreshable {
             await viewModel.refresh()
         }
+    }
+
+    @ViewBuilder
+    private var setupChips: some View {
+        let sump = viewModel.aquarium.sumpType
+        let livestock = viewModel.aquarium.livestockType
+        if sump != nil || livestock != nil {
+            HStack(spacing: 8) {
+                if let sump {
+                    setupChip(icon: sump.iconSystemName, text: sump.displayName)
+                }
+                if let livestock {
+                    setupChip(icon: livestock.iconSystemName, text: livestock.displayName)
+                }
+                Spacer(minLength: 0)
+            }
+        }
+    }
+
+    private func setupChip(icon: String, text: String) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.caption.weight(.semibold))
+            Text(text)
+                .font(.caption.weight(.medium))
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(Color.blue.opacity(0.12), in: Capsule())
+        .foregroundStyle(.blue)
     }
 
     // MARK: - Chart (pinned on top, single parameter)
